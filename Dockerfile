@@ -11,9 +11,9 @@ RUN apt-get update \
 	  curl composer php-gd php-gettext php-mbstring php-mysql php-phpseclib php-sqlite3 mysql-client postgresql-client php-pgsql \
 		&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /etc/php/7.2/cli/php.ini \
     && apt-get clean \
-    && apt-get -y install gcc make autoconf libc-dev pkg-config
-    && apt-get -y install php7.3-dev
-    && apt-get -y install libmcrypt-dev
-    && pecl install mcrypt-1.0.2
+    && apt-get -y install gcc make autoconf libc-dev pkg-config \
+    && apt-get -y install php7.3-dev \
+    && apt-get -y install libmcrypt-dev \
+    && pecl install mcrypt-1.0.2 \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && cd /usr/local/bin
