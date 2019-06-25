@@ -1,3 +1,3 @@
-# Docker Images for Joomla CI
+# Docker Container with PHP 7.2
 
-This repo contains several images for Joomla development.
+Docker Container for unit testing with PHP 7.2 and our PHP Unit extensions.
