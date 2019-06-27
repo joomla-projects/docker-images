@@ -6,11 +6,6 @@ RUN apk --no-cache add zlib-dev libpng-dev postgresql-dev autoconf gcc composer
 
 RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql
 
-RUN docker-php-ext-enable memcache
-
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
-
 ENV MEMCACHED_DEPS zlib-dev libmemcached-dev cyrus-sasl-dev
 RUN apk add --no-cache --update libmemcached-libs zlib
 RUN set -xe \
