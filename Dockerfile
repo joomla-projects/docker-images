@@ -28,5 +28,3 @@ RUN pecl install memcached-2.2.0
 RUN pecl install redis-2.2.8
 
 RUN echo 'memory_limit=1G' > /usr/local/etc/php/conf.d/memory-limit.ini
-
-RUN php -i
