@@ -21,7 +21,9 @@ RUN docker-php-ext-configure gd \
         --with-jpeg-dir=/usr/lib/ \
         --with-gd
 
-RUN docker-php-ext-install gd mysql mysqli pdo_mysql pgsql pdo_pgsql mcrypt
+RUN NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && docker-php-ext-install -j${NPROC} gd
+
+RUN docker-php-ext-install mysql mysqli pdo_mysql pgsql pdo_pgsql mcrypt
 
 RUN pecl install xdebug-2.5.5
 RUN pecl install memcached-2.2.0
