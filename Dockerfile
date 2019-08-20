@@ -2,7 +2,14 @@ FROM php:7.2-fpm-alpine
 
 LABEL authors="Hannes Papenberg"
 
-RUN apk --no-cache add zlib-dev libpng-dev postgresql-dev autoconf gcc
+RUN apk --no-cache add zlib-dev libpng-dev postgresql-dev autoconf gcc freetype \
+    libpng libjpeg-turbo freetype-dev jpeg-dev libjpeg libjpeg-turbo-dev
+
+RUN docker-php-ext-configure gd \
+    --with-freetype-dir=/usr/lib/ \
+    --with-png-dir=/usr/lib/ \
+    --with-jpeg-dir=/usr/lib/ \
+    --with-gd
 
 RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql
 
@@ -18,5 +25,5 @@ RUN set -xe \
     && apk del .memcached-deps .phpize-deps
 
 RUN apk add --no-cache --update gcc make autoconf libc-dev \
-	&& pecl install redis \
-	&& docker-php-ext-enable redis
+    && pecl install redis \
+    && docker-php-ext-enable redis
