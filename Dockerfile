@@ -3,7 +3,7 @@ FROM phpdaily/php:8.0.0-dev-fpm-alpine
 LABEL authors="Hannes Papenberg"
 
 COPY docker-php-ext-get /usr/local/bin/
-
+RUN chmod +x /usr/local/bin/docker-php-ext-get
 
 ENV MEMCACHED_VERSION 3.1.3
 ENV REDIS_VERSION 5.0.2
