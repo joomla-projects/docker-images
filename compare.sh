@@ -209,12 +209,6 @@ for i in "${in_arr[@]}"; do
     FTP_INCLUDE_STRING="$FTP_INCLUDE_STRING -x $i"
 done
 
-echo "Opening lftp connection with parameters:"
-echo "FTP Username: " $FTP_USERNAME
-echo "FTP Password: " $FTP_PASSWORD
-echo "FTP Hostname: " $FTP_HOSTNAME
-echo "FTP Destination directory: " $FTP_DEST_DIR"/"$DRONE_PULL_REQUEST
-
 lftp -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOSTNAME << EOF
 set ftp:ssl-allow $FTP_SECURE
 set ftp:ssl-force $FTP_SECURE
