@@ -81,8 +81,6 @@ mkdir $CMP_SLAVE_DIR
 
 # Compare files/directories
 echo "Finding differences between builds..."
-echo "MASTER: " $CMP_MASTER_FOLDER
-echo "SLAVE:  " $CMP_SLAVE_FOLDER
 	diff -qr --exclude=node_modules \
              --exclude=build \
              --exclude=administrator/components/com_media/node_modules \
