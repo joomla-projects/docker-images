@@ -9,5 +9,3 @@ RUN apk --no-cache add \
         zip
 ADD compare.sh .
 RUN chmod +x ./compare.sh
-
-ENTRYPOINT ./compare.sh
