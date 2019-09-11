@@ -88,10 +88,12 @@ echo "Finding differences between builds..."
         $CMP_MASTER_FOLDER $CMP_SLAVE_FOLDER >> $CMP_DIFF_LOG
 
 # Create list of files that only exist in master directory
-cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
+cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER/+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
+cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER:+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'|.|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
 
 # Create list of files that only exist in slave directory
-cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_SLAVE_FOLDER+" | sed -n 's/://p' | sed 's|'$CMP_SLAVE_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_SLAVE_LOG
+cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_SLAVE_FOLDER/+" | sed -n 's/://p' | sed 's|'$CMP_SLAVE_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_SLAVE_LOG
+cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_SLAVE_FOLDER:+" | sed -n 's/://p' | sed 's|'$CMP_SLAVE_FOLDER'|.|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_SLAVE_LOG
 
 # Create list of files that differ from master
 cat $CMP_DIFF_LOG | grep -Eo " and $CMP_SLAVE_FOLDER/[^[:space:]]+" | grep -Eo "$CMP_SLAVE_FOLDER/[^[:space:]]+" | sed 's|'$CMP_SLAVE_FOLDER'/|./|' >> $CMP_DIFFERS_FROM_LOG
@@ -129,7 +131,7 @@ echo "Current directory: "$(pwd)
 # Move deleted files list to build folder
 while IFS="" read -r file || [ -n "$file" ]
 do
-    deleted_file_no_root=$(echo $file | cut -d'/' -f3-)
+    deleted_file_no_root=$file
     echo $deleted_file_no_root >> $CMP_DELETED_FILES_LOG
 done < $CMP_ONLY_IN_MASTER_LOG
 
