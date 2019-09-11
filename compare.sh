@@ -67,9 +67,10 @@ CMP_MASTER_DIR="$CMP_TMP/master"
 CMP_SLAVE_DIR="$CMP_TMP/slave"
 CMP_BUILD_DIR="$CMP_TMP/build"
 CMP_DIFF_LOG="$CMP_TMP/diff.log"
-CMP_ONLY_IN_MASTER_LOG="deleted_files.log"
+CMP_ONLY_IN_MASTER_LOG="$CMP_TMP/only_in_master.log"
 CMP_ONLY_IN_SLAVE_LOG="$CMP_TMP/only_in_slave.log"
 CMP_DIFFERS_FROM_LOG="$CMP_TMP/differs_from.log"
+CMP_DELETED_FILES_LOG="deleted_files.log"
 
 # Remove existent temp directory
 rm -rf $CMP_TMP
@@ -86,6 +87,7 @@ echo "Finding differences between builds..."
              --exclude=administrator/components/com_media/node_modules \
              --exclude=.* \
              --exclude=configuration.php \
+             --exclude=tmp \
         $CMP_MASTER_FOLDER $CMP_SLAVE_FOLDER >> $CMP_DIFF_LOG
 
 # Create list of files that only exist in master directory
@@ -107,7 +109,7 @@ while IFS="" read -r file || [ -n "$file" ]
 do
     destination_file="$CMP_BUILD_DIR/$(echo $file  | cut -d'/' -f3-)"
     echo "Copying file " $destination_file "..."
-    mkdir -p $destination_file && cp -r $file $destination_file
+    mkdir -p $destination_file | sed -re 's/[^/]+$//g' && cp -r $file $destination_file
 done < $CMP_ONLY_IN_SLAVE_LOG
 
 # Copy all files that differ into build folder
@@ -115,8 +117,21 @@ while IFS="" read -r file || [ -n "$file" ]
 do
     destination_file="$CMP_BUILD_DIR/$(echo $file  | cut -d'/' -f3-)"
     echo "Copying file " $destination_file "..."
-    mkdir -p $destination_file && cp -r $file $destination_file
+    mkdir -p $destination_file | sed -re 's/[^/]+$//g' && cp -r $file $destination_file
 done < $CMP_DIFFERS_FROM_LOG
+
+# Move deleted files list to build folder
+
+
+# Copy all files that differ into build folder
+while IFS="" read -r file || [ -n "$file" ]
+do
+    deleted_file_no_root=$(echo $file | cut -d'/' -f3-)
+    echo $deleted_file_no_root >> $CMP_DELETED_FILES_LOG
+done < $CMP_ONLY_IN_MASTER_LOG
+
+echo "Moving file " $CMP_DELETED_FILES_LOG "..."
+mv $CMP_DELETED_FILES_LOG $CMP_BUILD_DIR
 
 # Zip build folder
 echo "Zipping build folder..."
@@ -126,7 +141,6 @@ popd
 # Move files to upload directory
 mkdir upload
 mv "$CMP_BUILD_DIR/$CMP_ARCHIVE.zip" ./upload
-mv "$CMP_ONLY_IN_MASTER_LOG" ./upload
 echo "Finished zipping build."
 
 # Clean up temporary files
