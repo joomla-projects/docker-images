@@ -7,5 +7,5 @@ RUN apk --no-cache add \
         git \
         openssh-client \
         zip
-ADD compare.sh .
-RUN chmod +x ./compare.sh
+ADD compare.sh /bin
+RUN chmod +x /bin/compare.sh
