@@ -29,8 +29,14 @@ if ! [ -d .git ]; then
 fi
 
 git checkout $BRANCH_NAME
-git pull
-
+git remote update
+if ! git diff --quiet remotes/origin/HEAD; then
+    echo "Updating reference repo..."
+    git pull
+    composer validate --no-check-all --strict
+    composer install --no-progress --no-suggest
+    npm ci --unsafe-perm
+fi
 cd $current_directory
 echo "Current directory: "$(pwd)
 
@@ -135,8 +141,12 @@ do
     echo $deleted_file_no_root >> $CMP_DELETED_FILES_LOG
 done < $CMP_ONLY_IN_MASTER_LOG
 
-echo "Moving file " $CMP_DELETED_FILES_LOG "..."
-mv $CMP_DELETED_FILES_LOG $CMP_BUILD_DIR
+if [ -f $CMP_DELETED_FILES_LOG ]; then
+    echo "Moving file " $CMP_DELETED_FILES_LOG "..."
+    mv $CMP_DELETED_FILES_LOG $CMP_BUILD_DIR
+else
+    echo "No deleted files found..."
+fi
 
 # Zip build folder
 echo "Zipping build folder..."
@@ -172,6 +182,11 @@ if [ -z "$FTP_HOSTNAME" ]; then
     exit 1
 fi
 
+# Check if FTP port is set
+if [ -z "$FTP_PORT" ]; then
+    FTP_PORT="21"
+fi
+
 # Check if FTP password is set
 if [ -z "$FTP_PASSWORD" ]; then
     echo "FTP-password not set"
@@ -191,9 +206,7 @@ if [ -z "$FTP_VERIFY" ]; then
 fi
 
 # Destination directory on remote server
-if [ -z "$FTP_DEST_DIR" ]; then
-    FTP_DEST_DIR="/"
-fi
+export FTP_DEST_DIR=$FTP_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/patchtester
 
 # Source directory on local machine
 if [ -z "$FTP_SRC_DIR" ]; then
@@ -226,19 +239,23 @@ for i in "${in_arr[@]}"; do
     FTP_INCLUDE_STRING="$FTP_INCLUDE_STRING -x $i"
 done
 
-lftp -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOSTNAME << EOF
+lftp -u $FTP_USERNAME,$FTP_PASSWORD $FTP_HOSTNAME:$FTP_PORT << EOF
 set ftp:ssl-allow $FTP_SECURE
 set ftp:ssl-force $FTP_SECURE
 set ftp:ssl-protect-data $FTP_SECURE
 set ssl:verify-certificate $FTP_VERIFY
 set ssl:check-hostname $FTP_VERIFY
 $FTP_CLEAN_DIR
-mirror --verbose $FTP_CHMOD -R $FTP_INCLUDE_STRING $FTP_EXCLUDE_STRING -R $FTP_DEST_DIR"/"$DRONE_PULL_REQUEST
+mirror --verbose $FTP_CHMOD -R $FTP_INCLUDE_STRING $FTP_EXCLUDE_STRING -R $FTP_DEST_DIR
 wait all
 exit
 EOF
 
+# Clean up
 rm -rf ./upload
+
+# Finish
+echo "Find the diff online: https://"$FTP_HOSTNAME$FTP_DEST_DIR"/"$CMP_ARCHIVE".zip"
 
 echo ""
 echo ""
