@@ -36,5 +36,3 @@ ADD compare.sh /bin
 RUN chmod +x /bin/composer_install.sh
 RUN /bin/composer_install.sh
 RUN chmod +x /bin/compare.sh
-
-RUN /bin/compare.sh
