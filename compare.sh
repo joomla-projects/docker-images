@@ -187,6 +187,11 @@ if [ -z "$FTP_PORT" ]; then
     FTP_PORT="21"
 fi
 
+# Check if download port is set
+if [ -z "$FTP_DOWNLOAD_PORT" ]; then
+    FTP_DOWNLOAD_PORT=444
+fi
+
 # Check if FTP password is set
 if [ -z "$FTP_PASSWORD" ]; then
     echo "FTP-password not set"
@@ -255,7 +260,7 @@ EOF
 rm -rf ./upload
 
 # Finish
-echo "Find the diff online: https://"$FTP_HOSTNAME$FTP_DEST_DIR"/"$CMP_ARCHIVE".zip"
+echo "Find the diff online: https://"$FTP_HOSTNAME:$FTP_DOWNLOAD_PORT$FTP_DEST_DIR"/"$CMP_ARCHIVE".zip"
 
 echo ""
 echo ""
