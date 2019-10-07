@@ -89,6 +89,9 @@ echo "Finding differences between builds..."
              --exclude=build \
              --exclude=administrator/components/com_media/node_modules \
              --exclude=.* \
+             --exclude=./test/Codeception/_output \
+             --exclude=./test/Codeception/_support/_generated \
+             --exclude=./selenium.log \
              --exclude=configuration.php \
              --exclude=tmp \
         $CMP_MASTER_FOLDER $CMP_SLAVE_FOLDER >> $CMP_DIFF_LOG
@@ -184,7 +187,7 @@ fi
 
 # Check if FTP port is set
 if [ -z "$FTP_PORT" ]; then
-    FTP_PORT="21"
+    FTP_PORT=21
 fi
 
 # Check if download port is set
