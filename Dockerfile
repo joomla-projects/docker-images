@@ -3,7 +3,7 @@ FROM php:7.3-fpm-alpine
 LABEL authors="Hannes Papenberg"
 
 RUN apk --no-cache add zlib-dev libpng-dev postgresql-dev autoconf gcc freetype \
-    libpng libjpeg-turbo freetype-dev jpeg-dev libjpeg libjpeg-turbo-dev
+    libpng libjpeg-turbo freetype-dev jpeg-dev libjpeg libjpeg-turbo-dev libzip-dev
 
 RUN docker-php-ext-configure gd \
     --with-freetype-dir=/usr/lib/ \
