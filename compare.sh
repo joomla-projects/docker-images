@@ -12,7 +12,7 @@ echo "Current directory: "$(pwd)
 
 current_directory=$(pwd)
 
-echo "Start building packages..."
+echo "Start building packages... ($DRONE_COMMIT)"
 
 php build/build.php --remote $DRONE_COMMIT
 
@@ -119,8 +119,9 @@ rm -rf ./upload
 
 DOWNLOADURL=$HTTP_ROOT/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/system-tests/$DRONE_BUILD_NUMBER
 
-curl -X POST "https://api.github.com/repos/$DRONE_REPO/$DRONE_BRANCH/statuses/$DRONE_COMMIT?access_token=$GITHUB_TOKEN"
-  -H "Content-Type: application/json"
+curl -X POST "https://api.github.com/repos/$DRONE_REPO/$DRONE_BRANCH/statuses/$DRONE_COMMIT" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: token $GITHUB_TOKEN" \
   -d "{\"state\": \"success\", \"context\": \"Download\", \"description\": \"Prebuild packages are available for download.\", \"target_url\": \"$DOWNLOADURL\"}"
 
 # Finish
