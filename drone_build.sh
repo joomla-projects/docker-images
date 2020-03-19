@@ -1,18 +1,11 @@
 #!/bin/bash
 
-##########
-# UPDATE #
-##########
-
-echo "#################################################"
-echo "Updating Joomla! 4.0-dev reference (if necassary)"
-echo "#################################################"
-
+echo "###########################"
+echo "Start building the packages"
+echo "###########################"
 echo "Current directory: "$(pwd)
 
 current_directory=$(pwd)
-
-echo "Start building packages... ($DRONE_COMMIT)"
 
 php build/build.php --remote=$DRONE_COMMIT --exclude-gzip --exclude-bzip2 --include-zstd
 
@@ -28,9 +21,9 @@ rm -rf $CMP_TMP
 # UPLOAD #
 ##########
 
-echo "###########################"
-echo "Uploading diff to CI server"
-echo "###########################"
+echo "################################"
+echo "Uploading Packages to the server"
+echo "################################"
 echo "Current directory: "$(pwd)
 
 # Check if FTP username is set
