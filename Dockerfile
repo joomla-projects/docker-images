@@ -10,6 +10,7 @@ RUN apk --no-cache add \
         git \
         openssh-client \
         zip \
+        zstd \
         php \
         php-curl \
         php-openssl \
