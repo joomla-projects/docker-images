@@ -1,6 +1,6 @@
 FROM alpine:edge
 
-LABEL authors="Sebastian Enns, Lukas Maximilian Kimpel, Hannes Papenberg, Harald Leithner"
+LABEL authors="Harald Leithner"
 
 RUN apk --no-cache add \
         libressl \

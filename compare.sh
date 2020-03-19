@@ -14,7 +14,7 @@ current_directory=$(pwd)
 
 echo "Start building packages... ($DRONE_COMMIT)"
 
-php build/build.php --remote $DRONE_COMMIT
+php build/build.php --remote=$DRONE_COMMIT
 
 # Move files to upload directory
 mkdir upload
