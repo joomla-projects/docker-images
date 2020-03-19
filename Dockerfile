@@ -31,8 +31,7 @@ RUN apk --no-cache add \
         npm
 
 ADD composer_install.sh /bin
-ADD compare.sh /bin
+ADD drone_build.sh /bin
 
-RUN chmod +x /bin/composer_install.sh
+RUN chmod +x /bin/composer_install.sh /bin/drone_build.sh
 RUN /bin/composer_install.sh
-RUN chmod +x /bin/compare.sh
