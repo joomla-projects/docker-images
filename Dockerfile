@@ -11,6 +11,7 @@ RUN apk --no-cache add \
         openssh-client \
         zip \
         zstd \
+        tar \
         php \
         php-curl \
         php-openssl \
