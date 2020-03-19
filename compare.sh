@@ -119,7 +119,7 @@ rm -rf ./upload
 
 DOWNLOADURL=$HTTP_ROOT/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/system-tests/$DRONE_BUILD_NUMBER
 
-curl -X POST "https://api.github.com/repos/$DRONE_REPO/$DRONE_BRANCH/statuses/$DRONE_COMMIT" \
+curl -X POST "https://api.github.com/repos/$DRONE_REPO/statuses/$DRONE_COMMIT" \
   -H "Content-Type: application/json" \
   -H "Authorization: token $GITHUB_TOKEN" \
   -d "{\"state\": \"success\", \"context\": \"Download\", \"description\": \"Prebuild packages are available for download.\", \"target_url\": \"$DOWNLOADURL\"}"
