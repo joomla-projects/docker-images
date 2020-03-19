@@ -14,7 +14,7 @@ current_directory=$(pwd)
 
 echo "Start building packages..."
 
-php build/build.php
+php build/build.php --remote $DRONE_COMMIT
 
 # Move files to upload directory
 mkdir upload
@@ -117,8 +117,14 @@ EOF
 # Clean up
 rm -rf ./upload
 
+DOWNLOADURL=$HTTP_ROOT/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/system-tests/$DRONE_BUILD_NUMBER
+
+curl -X POST "https://api.github.com/repos/$DRONE_REPO/$DRONE_BRANCH/statuses/$DRONE_COMMIT?access_token=$GITHUB_TOKEN"
+  -H "Content-Type: application/json"
+  -d "{\"state\": \"success\", \"context\": \"Download\", \"description\": \"Prebuild packages are available for download.\", \"target_url\": \"$DOWNLOADURL\"}"
+
 # Finish
-echo "Find the packages online: https://"$FTP_HOSTNAME$FTP_DEST_DIR"/"
+echo "Find the packages online: $DOWNLOADURL"
 
 echo ""
 echo ""
