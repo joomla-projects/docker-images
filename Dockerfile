@@ -1,6 +1,6 @@
 FROM alpine:edge
 
-LABEL authors="Sebastian Enns, Lukas Maximilian Kimpel, Hannes Papenberg, Harald Leithner"
+LABEL authors="Harald Leithner"
 
 RUN apk --no-cache add \
         libressl \
@@ -10,6 +10,8 @@ RUN apk --no-cache add \
         git \
         openssh-client \
         zip \
+        zstd \
+        tar \
         php \
         php-curl \
         php-openssl \
@@ -31,8 +33,7 @@ RUN apk --no-cache add \
         npm
 
 ADD composer_install.sh /bin
-ADD compare.sh /bin
+ADD drone_build.sh /bin
 
-RUN chmod +x /bin/composer_install.sh
+RUN chmod +x /bin/composer_install.sh /bin/drone_build.sh
 RUN /bin/composer_install.sh
-RUN chmod +x /bin/compare.sh
