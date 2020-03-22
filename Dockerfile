@@ -40,5 +40,8 @@ RUN dpkg -i google-chrome*.deb
 
 RUN apt-get upgrade -y
 
+RUN npm install -g selenium-standalone
+RUN selenium-standalone install
+
 # Start Apache and MySQL
 CMD apache2ctl -D FOREGROUND
