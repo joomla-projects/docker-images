@@ -45,43 +45,64 @@ do
   fi
 done
 
-html=$(</build_templates/index.html)
+template=$(</build_templates/index.html)
 
-html=${html//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
-html=${html//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
-html=${html//%PRID%/"${DRONE_PULL_REQUEST}"}
-html=${html//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
-html=${html//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
-html=${html//%BUILDDRONEURL%/"${DRONE_BUILD_LINK}"}
-html=${html//%PRUPDATELISTURL%/"${PRUPDATELISTURL}"}
-html=${html//%PACKAGEFILES%/"${PACKAGEFILES}"}
-html=${html//%DATE%/"`date`"}
-html=${html//%PRCOMMITURL%/"https://github.com/joomla/joomla-cms/tree/%PRCOMMIT%"}
-html=${html//%PRCOMMIT%/"${DRONE_COMMIT}"}
-html=${html//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
-html=${html//%MENU%/"`curl http://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB`"}
-html=${html//%FOOTER%/"`curl http://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB`"}
-html=${html//%loginroute%/"https://ci.joomla.org/login"}
-html=${html//%logintext%/"Drone Login"}
-html=${html//%currentyear%/"`date +%Y`"}
+template=${template//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
+template=${template//%PRID%/"${DRONE_PULL_REQUEST}"}
+template=${template//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
+template=${template//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
+template=${template//%BUILDDRONEURL%/"${DRONE_BUILD_LINK}"}
+template=${template//%PRUPDATELISTURL%/"${PRUPDATELISTURL}"}
+template=${template//%PACKAGEFILES%/"${PACKAGEFILES}"}
+template=${template//%DATE%/"`date`"}
+template=${template//%PRCOMMITURL%/"https://github.com/joomla/joomla-cms/tree/%PRCOMMIT%"}
+template=${template//%PRCOMMIT%/"${DRONE_COMMIT}"}
+template=${template//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
+template=${template//%MENU%/"`curl http://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB`"}
+template=${template//%FOOTER%/"`curl http://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB`"}
+template=${template//%loginroute%/"https://ci.joomla.org/login"}
+template=${template//%logintext%/"Drone Login"}
+template=${template//%currentyear%/"`date +%Y`"}
 
-echo $html > ./upload/index.html
+echo $template > ./upload/index.html
 
-xml=$(</build_templates/pr_list.xml)
-xml=${xml//%PRID%/"${DRONE_PULL_REQUEST}"}
-xml=${xml//%PRUPDATEEXTENSIONURL%/"${PRUPDATEEXTENSIONURL}"}
+template=$(</build_templates/pr_list.xml)
 
-echo $xml > ./upload/pr_list.xml
+template=${template//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
+template=${template//%PRID%/"${DRONE_PULL_REQUEST}"}
+template=${template//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
+template=${template//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
+template=${template//%BUILDDRONEURL%/"${DRONE_BUILD_LINK}"}
+template=${template//%PRUPDATELISTURL%/"${PRUPDATELISTURL}"}
+template=${template//%PACKAGEFILES%/"${PACKAGEFILES}"}
+template=${template//%DATE%/"`date`"}
+template=${template//%PRCOMMITURL%/"https://github.com/joomla/joomla-cms/tree/%PRCOMMIT%"}
+template=${template//%PRCOMMIT%/"${DRONE_COMMIT}"}
+template=${template//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
 
-xml=${xml//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
-xml=${xml//%PRID%/"${DRONE_PULL_REQUEST}"}
-xml=${xml//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
-xml=${xml//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
-xml=${xml//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
+template=${template//%PRUPDATEEXTENSIONURL%/"${PRUPDATEEXTENSIONURL}"}
 
-xml=$(</build_templates/pr_extension.xml)
 
-echo $xml > ./upload/pr_extension.xml
+echo $template > ./upload/pr_list.xml
+
+template=$(</build_templates/pr_extension.xml)
+
+template=${template//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
+template=${template//%PRID%/"${DRONE_PULL_REQUEST}"}
+template=${template//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
+template=${template//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
+template=${template//%BUILDDRONEURL%/"${DRONE_BUILD_LINK}"}
+template=${template//%PRUPDATELISTURL%/"${PRUPDATELISTURL}"}
+template=${template//%PACKAGEFILES%/"${PACKAGEFILES}"}
+template=${template//%DATE%/"`date`"}
+template=${template//%PRCOMMITURL%/"https://github.com/joomla/joomla-cms/tree/%PRCOMMIT%"}
+template=${template//%PRCOMMIT%/"${DRONE_COMMIT}"}
+template=${template//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
+
+echo $template > ./upload/pr_extension.xml
 
 # Clean up temporary files
 rm -rf build/tmp
