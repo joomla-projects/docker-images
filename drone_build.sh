@@ -22,7 +22,11 @@ JOOMLA
 PRVERSIONSTRING=`php -r 'const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::getShortVersion();'`
 JOOMLAVERSION=$PRVERSIONSTRING
 
-php build/build.php --remote=$DRONE_COMMIT --exclude-gzip --exclude-bzip2 --include-zstd
+git add libraries/src/Version.php
+git commit -m "${PRVERSIONSTRING}"
+git tag -m "${PRVERSIONSTRING}" "${PRVERSIONSTRING}"
+
+php build/build.php --remote="${PRVERSIONSTRING}" --exclude-gzip --exclude-bzip2 --include-zstd
 
 # Move files to upload directory
 mkdir upload
