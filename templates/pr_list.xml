@@ -1,0 +1,4 @@
+<extensionset name="Joomla! Core Nightly Builds" description="Joomla! Core Next Major Nightly Builds">
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="3.10" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="4.0" detailsurl="%PRUPDATEEXTENSIONURL%" />
+</extensionset>

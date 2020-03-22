@@ -35,5 +35,7 @@ RUN apk --no-cache add \
 ADD composer_install.sh /bin
 ADD drone_build.sh /bin
 
+ADD templates /build_templates
+
 RUN chmod +x /bin/composer_install.sh /bin/drone_build.sh
 RUN /bin/composer_install.sh

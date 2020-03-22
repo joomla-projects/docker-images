@@ -7,6 +7,20 @@ echo "Current directory: "$(pwd)
 
 current_directory=$(pwd)
 
+EXTRAVERSION=`php -r 'const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::EXTRA_VERSION;'`
+EXTRAVERSION="${EXTRAVERSION}+pr.${DRONE_PULL_REQUEST}"
+
+(
+cat <<JOOMLA
+<?php
+\$content = file_get_contents("libraries/src/Version.php");
+\$content = preg_replace("/EXTRA_VERSION\s*=\s*\'[^\']*\'/", "EXTRA_VERSION = '$EXTRAVERSION'", \$content);
+file_put_contents("libraries/src/Version.php", \$content);
+JOOMLA
+) | php
+
+PRVERSIONSTRING=`php -r 'const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::getShortVersion();'`
+
 php build/build.php --remote=$DRONE_COMMIT --exclude-gzip --exclude-bzip2 --include-zstd
 
 # Move files to upload directory
@@ -14,8 +28,63 @@ mkdir upload
 mv build/tmp/packages/* ./upload
 echo "Finished build."
 
+echo "Building html page"
+
+DOWNLOADURL=$HTTP_ROOT/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/downloads/$DRONE_BUILD_NUMBER
+DRONE_BUILD_LINK="https://${DRONE_SYSTEM_HOSTNAME}/${DRONE_REPO}/${DRONE_BUILD_NUMBER}"
+PRUPDATELISTURL="${DOWNLOADURL}/pr_list.xml"
+PRUPDATEEXTENSIONURL="${DOWNLOADURL}/pr_extension.xml"
+
+PACKAGEFILES=""
+for file in ./upload/*
+do
+  PACKAGEFILES="${PACKAGEFILES}<li><a href="DOWNLOADURL/${file}">${file}</a></li>"
+
+  if [[ $string == *"Update_Package.zip"* ]]; then
+    PRUPDATEPACKAGEURL="${DOWNLOADURL}/${file}" !
+  fi
+done
+
+html=$(</build_templates/index.html)
+
+html=${html//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+html=${html//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
+html=${html//%PRID%/"${DRONE_PULL_REQUEST}"}
+html=${html//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
+html=${html//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
+html=${html//%BUILDDRONEURL%/"${DRONE_BUILD_LINK}"}
+html=${html//%PRUPDATELISTURL%/"${PRUPDATELISTURL}"}
+html=${html//%PACKAGEFILES%/"${PACKAGEFILES}"}
+html=${html//%DATE%/"`date`"}
+html=${html//%PRCOMMITURL%/"https://github.com/joomla/joomla-cms/tree/%PRCOMMIT%"}
+html=${html//%PRCOMMIT%/"${DRONE_COMMIT}"}
+html=${html//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
+html=${html//%MENU%/"`curl http://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB`"}
+html=${html//%FOOTER%/"`curl http://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB`"}
+html=${html//%loginroute%/"https://ci.joomla.org/login"}
+html=${html//%logintext%/"Drone Login"}
+html=${html//%currentyear%/"`date +%Y`"}
+
+echo $html > ./upload/index.html
+
+xml=$(</build_templates/pr_list.xml)
+xml=${xml//%PRID%/"${DRONE_PULL_REQUEST}"}
+xml=${xml//%PRUPDATEEXTENSIONURL%/"${PRUPDATEEXTENSIONURL}"}
+
+echo $xml > ./upload/pr_list.xml
+
+xml=${xml//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
+xml=${xml//%PRID%/"${DRONE_PULL_REQUEST}"}
+xml=${xml//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
+xml=${xml//%PRUPDATEPACKAGEURL%/"${PRUPDATEPACKAGEURL}"}
+xml=${xml//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
+
+xml=$(</build_templates/pr_extension.xml)
+
+echo $xml > ./upload/pr_extension.xml
+
 # Clean up temporary files
-rm -rf $CMP_TMP
+rm -rf build/tmp
 
 ##########
 # UPLOAD #
@@ -63,7 +132,6 @@ fi
 
 # Destination directory on remote server
 export FTP_DEST_DIR=$FTP_DEST_DIR/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/downloads/$DRONE_BUILD_NUMBER
-export DOWNLOADURL=$HTTP_ROOT/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/downloads/$DRONE_BUILD_NUMBER
 
 # Source directory on local machine
 if [ -z "$FTP_SRC_DIR" ]; then
