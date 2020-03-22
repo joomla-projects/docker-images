@@ -55,6 +55,9 @@ do
   fi
 done
 
+MENU=`curl https://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB`
+FOOTER=`curl https://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB`
+
 template=$(</build_templates/index.html)
 
 template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
@@ -69,8 +72,8 @@ template=${template//%DATE%/"`date`"}
 template=${template//%PRCOMMITURL%/"https://github.com/joomla/joomla-cms/tree/%PRCOMMIT%"}
 template=${template//%PRCOMMIT%/"${DRONE_COMMIT}"}
 template=${template//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
-template=${template//%MENU%/"`curl http://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB`"}
-template=${template//%FOOTER%/"`curl http://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB`"}
+template=${template//%MENU%/"${MENU}"}
+template=${template//%FOOTER%/"${FOOTER}"}
 template=${template//%reportroute%/"https://github.com/joomla-projects/docker-images/issues"}
 template=${template//%loginroute%/"https://ci.joomla.org/login"}
 template=${template//%logintext%/"Drone Login"}
