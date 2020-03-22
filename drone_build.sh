@@ -20,6 +20,7 @@ JOOMLA
 ) | php
 
 PRVERSIONSTRING=`php -r 'const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::getShortVersion();'`
+JOOMLAVERSION=$PRVERSIONSTRING
 
 php build/build.php --remote=$DRONE_COMMIT --exclude-gzip --exclude-bzip2 --include-zstd
 
@@ -30,15 +31,17 @@ echo "Finished build."
 
 echo "Building html page"
 
-DOWNLOADURL=$HTTP_ROOT/$DRONE_REPO/$DRONE_BRANCH/$DRONE_PULL_REQUEST/downloads/$DRONE_BUILD_NUMBER
+DOWNLOADURL="${HTTP_ROOT}/${DRONE_REPO}/${DRONE_BRANCH}/${DRONE_PULL_REQUEST}/downloads/${DRONE_BUILD_NUMBER}"
 DRONE_BUILD_LINK="https://${DRONE_SYSTEM_HOSTNAME}/${DRONE_REPO}/${DRONE_BUILD_NUMBER}"
+DRONE_BUILD_LINK="https://github.com/${DRONE_REPO}/${DRONE_BRANCH}/pull/${DRONE_PULL_REQUEST}"
 PRUPDATELISTURL="${DOWNLOADURL}/pr_list.xml"
 PRUPDATEEXTENSIONURL="${DOWNLOADURL}/pr_extension.xml"
 
 PACKAGEFILES=""
-for file in ./upload/*
+for packagefile in ./upload/*
 do
-  PACKAGEFILES="${PACKAGEFILES}<li><a href="DOWNLOADURL/${file}">${file}</a></li>"
+  file=$(basename $packagefile)
+  PACKAGEFILES="${PACKAGEFILES}<li><a href="${DOWNLOADURL}/${file}">${file}</a></li>"
 
   if [[ $string == *"Update_Package.zip"* ]]; then
     PRUPDATEPACKAGEURL="${DOWNLOADURL}/${file}" !
@@ -47,7 +50,7 @@ done
 
 template=$(</build_templates/index.html)
 
-template=${template//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
 template=${template//%PRID%/"${DRONE_PULL_REQUEST}"}
 template=${template//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
@@ -69,7 +72,7 @@ echo $template > ./upload/index.html
 
 template=$(</build_templates/pr_list.xml)
 
-template=${template//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
 template=${template//%PRID%/"${DRONE_PULL_REQUEST}"}
 template=${template//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}
@@ -89,7 +92,7 @@ echo $template > ./upload/pr_list.xml
 
 template=$(</build_templates/pr_extension.xml)
 
-template=${template//%PRGITHUBURL%/"${DRONE_COMMIT_LINK}"}
+template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
 template=${template//%PRID%/"${DRONE_PULL_REQUEST}"}
 template=${template//%PRVERSIONSTRING%/"${PRVERSIONSTRING}"}

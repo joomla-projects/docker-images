@@ -2,6 +2,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Prebuild Pull Request Download Packages for PR %PRID%</title>
+	<link href="https://cdn.joomla.org/templates/joomla/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<link href="https://cdn.joomla.org/template/css/template_3.0.0.min.css" rel="stylesheet">
 	<style>
 		.body .container {
@@ -26,7 +27,6 @@
 					<span class="icon-bar"></span>
 				</a>
 				%MENU%
-				<?php echo file_get_contents('http://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB'); ?>
 			</div>
 		</div>
 	</div>
@@ -99,11 +99,9 @@
 											<div class="alert alert-info">These packages were built: %DATE%</div>
 											<ul>
 												%PACKAGEFILES%
-												<li><a href="https://developer.joomla.org/nightlies/Joomla_4.0.0-beta1-dev-Development-Full_Package.zip">Joomla_4.0.0-beta1-dev-Development-Full_Package.zip</a></li>
-												<li><a href="https://developer.joomla.org/nightlies/Joomla_4.0.0-beta1-dev-Development-Update_Package.zip">Joomla_4.0.0-beta1-dev-Development-Update_Package.zip</a></li>
 											</ul>
-											<p>To always test the update component you can use this custom update server: <a href="%PRUPDATELISTURL%">%PRUPDATELISTURL%</a>
-											</p></div>
+											<p>To always test the update component you can use this custom update server: <br /> <a href="%PRUPDATELISTURL%">%PRUPDATELISTURL%</a></p>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -155,7 +153,6 @@
 	<div class="container-fluid">
 		<hr />
 		%FOOTER%
-		<?php echo file_get_contents('http://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB'); ?>
 	</div>
 </footer>
 </body>
