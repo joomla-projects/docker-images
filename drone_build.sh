@@ -43,7 +43,7 @@ do
   file=$(basename $packagefile)
   PACKAGEFILES="${PACKAGEFILES}<li><a href="${DOWNLOADURL}/${file}">${file}</a></li>"
 
-  if [[ $string == *"Update_Package.zip"* ]]; then
+  if [[ $file == *"Update_Package.zip"* ]]; then
     PRUPDATEPACKAGEURL="${DOWNLOADURL}/${file}" !
   fi
 done
