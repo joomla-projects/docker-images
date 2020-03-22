@@ -64,6 +64,7 @@ template=${template//%PRCOMMIT%/"${DRONE_COMMIT}"}
 template=${template//%JOOMLAVERSION%/"${JOOMLAVERSION}"}
 template=${template//%MENU%/"`curl http://cdn.joomla.org/template/renderer.php?section=menu&language=en-GB`"}
 template=${template//%FOOTER%/"`curl http://cdn.joomla.org/template/renderer.php?section=footer&language=en-GB`"}
+template=${template//%reportroute%/"https://github.com/joomla-projects/docker-images/issues"}
 template=${template//%loginroute%/"https://ci.joomla.org/login"}
 template=${template//%logintext%/"Drone Login"}
 template=${template//%currentyear%/"`date +%Y`"}
