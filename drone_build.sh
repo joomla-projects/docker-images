@@ -22,6 +22,9 @@ JOOMLA
 PRVERSIONSTRING=`php -r 'const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::getShortVersion();'`
 JOOMLAVERSION=$PRVERSIONSTRING
 
+git config --global user.email "drone@ci.joomla.org"
+git config --global user.name "Drone"
+
 git add libraries/src/Version.php
 git commit -m "${PRVERSIONSTRING}"
 git tag -m "${PRVERSIONSTRING}" "${PRVERSIONSTRING}"
