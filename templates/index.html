@@ -1,165 +1,158 @@
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Prebuilt Pull Request Download Packages for PR %PRID%</title>
-	<link href="https://developer.joomla.org/templates/joomla/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-	<link href="https://cdn.joomla.org/template/css/template_3.0.0.min.css" rel="stylesheet">
-	<style>
-		.body .container {
-			border: none;
-			border-radius: 0;
-			box-shadow: none;
-		}
-		.container-fluid {
-			margin: 0 auto;
-			max-width: 1170px;
-		}
-	</style>
-	<script src="https://developer.joomla.org/media/jui/js/jquery.min.js"></script>
-	<script src="https://developer.joomla.org/media/jui/js/bootstrap.min.js"></script>
-</head>
-
-<body>
-<!-- Top Nav -->
-<nav class="navigation" role="navigation">
-	<div id="mega-menu" class="navbar navbar-inverse">
-		<div class="navbar-inner">
-			<div class="container-fluid">
-				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</a>
-				%MENU%
-			</div>
-		</div>
-	</div>
-</nav>
-
-<header class="header">
-	<div class="container">
-		<div class="row-fluid">
-			<div class="span7">
-				<h1 class="page-title">
-					<a href="/">Prebuilt Download Packages for PR %PRID%</a>
-				</h1>
-			</div>
-			<div class="span5">
-				<div class="btn-toolbar pull-right">
-					<div class="btn-group">
-						<a href="https://downloads.joomla.org/" class="btn btn-large btn-warning">Stable Downloads</a>
+	<head>
+		<meta charset="UTF-8">
+		<title>Prebuilt Pull Request Download Packages for PR %PRID%</title>
+		<link href="https://developer.joomla.org/templates/joomla/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+		<link href="https://cdn.joomla.org/template/css/template_3.0.0.min.css" rel="stylesheet">
+		<style>
+			.body .container {
+				border: none;
+				border-radius: 0;
+				box-shadow: none;
+			}
+			.container-fluid {
+				margin: 0 auto;
+				max-width: 1170px;
+			}
+		</style>
+		<script src="https://developer.joomla.org/media/jui/js/jquery.min.js"></script>
+		<script src="https://developer.joomla.org/media/jui/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<!-- Top Nav -->
+		<nav class="navigation" role="navigation">
+			<div id="mega-menu" class="navbar navbar-inverse">
+				<div class="navbar-inner">
+					<div class="container-fluid">
+						<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</a>
+						%MENU%
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-</header>
-
-<nav class="subnav-wrapper">
-	<div class="subnav">
-		<div class="container">
-			<ul class="nav menu nav-pills mod-list">
-				<li><a href="https://ci.joomla.org">Home</a></li>
-				<li><a href="%BUILDDRONEURL%">Build on Drone</a></li>
-				<li><a href="%PRISSUESURL%">Build on Tracker</a></li>
-				<li><a href="%PRGITHUBURL%">Build on Github</a></li>
-			</ul>
-		</div>
-	</div>
-</nav>
-
-<!-- Body -->
-<div class="body">
-	<div class="container">
-		<div class="row-fluid">
-			<main id="content" class="span9">
-				<!-- Begin Content -->
-				<div class="item-page" itemscope="" itemtype="https://schema.org/Article">
-					<meta itemprop="inLanguage" content="en-GB">
-					<div class="page-header">
-						<h2>Help test Joomla!</h2>
+		</nav>
+		<header class="header">
+			<div class="container">
+				<div class="row-fluid">
+					<div class="span7">
+						<h1 class="page-title">
+							<a href="/">Prebuilt Download Packages for PR %PRID%</a>
+						</h1>
 					</div>
-
-					<div itemprop="articleBody">
-						<div class="alert alert-error"><strong>Warning!</strong> These packages are for testing purposes only and should never be used on production websites. 
+					<div class="span5">
+						<div class="btn-toolbar pull-right">
+							<div class="btn-group">
+								<a href="https://downloads.joomla.org/" class="btn btn-large btn-warning">Stable Downloads</a>
+							</div>
 						</div>
-						<p>These pull request packages are snapshots of specific code changes including new features and bug fixes.</p>
-            <p>They are made available to make it easier for users to:
-              <ul>
-                <li>Test their websites and extensions for potential issues with a specific pull request.</li>
-                <li>Confirm that the pull request request works as described.</li> 
-                <li>Provide feedback on ways to improve it before being accepted.</li>
-            </ul>
-						<p>As these packages are snapshots of a single pull request you may encounter other issues compared to the stable release.</p>
-            <p>If you do encounter an issue, please check <a href="%PRISSUESURL%">our issue tracker</a> to see if it has already been reported. If a report hasn't been made, please report it so other members of the community can review and fix the issue.</p>
-
-						<div>
-							<div id="nightlyBuilds" class="accordion">
-								<div class="accordion-group">
-									<div class="accordion-heading"><strong><a href="#joomla-40" data-toggle="collapse" class="accordion-toggle" style="">Joomla! %JOOMLAVERSION%</a></strong></div>
-									<div class="accordion-body in collapse" id="joomla-40" style="height: auto;">
-										<div class="accordion-inner">
-											<div class="alert alert-info">These packages were built based on commit <a href="%PRCOMMITURL%" class="alert-link">%PRCOMMIT%</a> included in pull request
-												<a href="%PRISSUESURL%" class="alert-link">%PRID%</a>
+					</div>
+				</div>
+			</div>
+		</header>
+		<nav class="subnav-wrapper">
+			<div class="subnav">
+				<div class="container">
+					<ul class="nav menu nav-pills mod-list">
+						<li><a href="https://ci.joomla.org">Home</a></li>
+						<li><a href="%BUILDDRONEURL%">Build on Drone</a></li>
+						<li><a href="%PRISSUESURL%">Build on Tracker</a></li>
+						<li><a href="%PRGITHUBURL%">Build on Github</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- Body -->
+		<div class="body">
+			<div class="container">
+				<div class="row-fluid">
+					<main id="content" class="span9">
+						<!-- Begin Content -->
+						<div class="item-page" itemscope="" itemtype="https://schema.org/Article">
+							<meta itemprop="inLanguage" content="en-GB">
+							<div class="page-header">
+								<h2>Help test Joomla!</h2>
+							</div>
+							<div itemprop="articleBody">
+								<div class="alert alert-error"><strong>Warning!</strong> These packages are for testing purposes only and should never be used on production websites. 
+								</div>
+								<p>These pull request packages are snapshots of specific code changes including new features and bug fixes.</p>
+								<p>They are made available to make it easier for users to:
+								<ul>
+									<li>Test their websites and extensions for potential issues with a specific pull request.</li>
+									<li>Confirm that the pull request request works as described.</li> 
+									<li>Provide feedback on ways to improve it before being accepted.</li>
+								</ul>
+								<p>As these packages are snapshots of a single pull request you may encounter other issues compared to the stable release.</p>
+								<p>If you do encounter an issue, please check <a href="%PRISSUESURL%">our issue tracker</a> to see if it has already been reported. If a report hasn't been made, please report it so other members of the community can review and fix the issue.</p>
+								<div>
+									<div id="nightlyBuilds" class="accordion">
+										<div class="accordion-group">
+											<div class="accordion-heading"><strong><a href="#joomla-40" data-toggle="collapse" class="accordion-toggle" style="">Joomla! %JOOMLAVERSION%</a></strong></div>
+											<div class="accordion-body in collapse" id="joomla-40" style="height: auto;">
+												<div class="accordion-inner">
+													<div class="alert alert-info">These packages were built based on commit <a href="%PRCOMMITURL%" class="alert-link">%PRCOMMIT%</a> included in pull request
+														<a href="%PRISSUESURL%" class="alert-link">%PRID%</a>
+													</div>
+													<div class="alert alert-info">These packages were built on %DATE%</div>
+													<ul>
+														%PACKAGEFILES%
+													</ul>
+													<p>To always test the update component you can use this custom update server: <br /> <a href="%PRUPDATELISTURL%">%PRUPDATELISTURL%</a></p>
+												</div>
 											</div>
-											<div class="alert alert-info">These packages were built on %DATE%</div>
-											<ul>
-												%PACKAGEFILES%
-											</ul>
-											<p>To always test the update component you can use this custom update server: <br /> <a href="%PRUPDATELISTURL%">%PRUPDATELISTURL%</a></p>
 										</div>
 									</div>
 								</div>
 							</div>
+							<ul itemscope="" itemtype="https://schema.org/BreadcrumbList" class="breadcrumb">
+								<li class="active">
+									You are here: &nbsp;
+								</li>
+								<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+									<a itemprop="item" href="https://ci.joomla.org/" class="pathway"><span itemprop="name">Home</span></a>
+									<span class="divider"> / </span>
+									<meta itemprop="position" content="1">
+								</li>
+								<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem" class="active">
+									<span itemprop="name"> PR %PRID% Builds </span>
+									<meta itemprop="position" content="2">
+								</li>
+							</ul>
 						</div>
-
-					</div>
-					<ul itemscope="" itemtype="https://schema.org/BreadcrumbList" class="breadcrumb">
-						<li class="active">
-							You are here: &nbsp;
-						</li>
-						<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
-							<a itemprop="item" href="https://ci.joomla.org/" class="pathway"><span itemprop="name">Home</span></a>
-							<span class="divider"> / </span>
-							<meta itemprop="position" content="1">
-						</li>
-						<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem" class="active">
-							<span itemprop="name"> PR %PRID% Builds </span>
-							<meta itemprop="position" content="2">
-						</li>
-					</ul>
+						<!-- End Content -->
+					</main>
+					<aside class="span3">
+						<!-- Begin Right Sidebar -->
+						<div class="moduletable">
+							<div class="custom">
+								<h3>Joomla! CMS</h3>
+								<ul class="nav menu nav-stacked nav-tabs">
+									<li><a href="https://downloads.joomla.org/latest">Current Release</a></li>
+									<li><a href="https://issues.joomla.org">View known Issues</a></li>
+									<li><a href="https://github.com/joomla/joomla-cms#build-status" target="_blank" rel="noopener noreferrer">Development Status</a></li>
+									<li><a href="https://developer.joomla.org/nightly-builds.html">Download Nightly builds</a></li>
+								</ul>
+								<h3>Joomla! Framework</h3>
+								<ul class="nav menu nav-stacked nav-tabs">
+									<li><a href="https://framework.joomla.org">Current Release</a></li>
+									<li><a href="https://framework.joomla.org/status">Development Status</a></li>
+								</ul>
+							</div>
+						</div>
+						<!-- End Right Sidebar -->
+					</aside>
 				</div>
-				<!-- End Content -->
-			</main>
-			<aside class="span3">
-				<!-- Begin Right Sidebar -->
-				<div class="moduletable">
-					<div class="custom">
-						<h3>Joomla! CMS</h3>
-						<ul class="nav menu nav-stacked nav-tabs">
-							<li><a href="https://downloads.joomla.org/latest">Current Release</a></li>
-							<li><a href="https://issues.joomla.org">View known Issues</a></li>
-							<li><a href="https://github.com/joomla/joomla-cms#build-status" target="_blank" rel="noopener noreferrer">Development Status</a></li>
-							<li><a href="https://developer.joomla.org/nightly-builds.html">Download Nightly builds</a></li>
-						</ul>
-						<h3>Joomla! Framework</h3>
-						<ul class="nav menu nav-stacked nav-tabs">
-							<li><a href="https://framework.joomla.org">Current Release</a></li>
-							<li><a href="https://framework.joomla.org/status">Development Status</a></li>
-						</ul>
-					</div>
-				</div>
-				<!-- End Right Sidebar -->
-			</aside>
+			</div>
 		</div>
-	</div>
-</div>
-<!-- Footer -->
-<footer class="footer center">
-	<div class="container-fluid">
-		<hr />
-		%FOOTER%
-	</div>
-</footer>
-</body>
+		<!-- Footer -->
+		<footer class="footer center">
+			<div class="container-fluid">
+				<hr />
+				%FOOTER%
+			</div>
+		</footer>
+	</body>
 </html>
