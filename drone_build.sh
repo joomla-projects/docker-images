@@ -81,7 +81,7 @@ template=${template//%currentyear%/"`date +%Y`"}
 
 echo $template > ./upload/index.html
 
-template=$(</build_templates/pr_list.xml)
+template=$(</build_templates/${DRONE_COMMIT_BRANCH}/pr_list.xml)
 
 template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
@@ -101,7 +101,7 @@ template=${template//%PRUPDATEEXTENSIONURL%/"${PRUPDATEEXTENSIONURL}"}
 
 echo $template > ./upload/pr_list.xml
 
-template=$(</build_templates/pr_extension.xml)
+template=$(</build_templates/${DRONE_COMMIT_BRANCH}/pr_extension.xml)
 
 template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
