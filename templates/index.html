@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Prebuild Pull Request Download Packages for PR %PRID%</title>
+	<title>Prebuilt Pull Request Download Packages for PR %PRID%</title>
 	<link href="https://developer.joomla.org/templates/joomla/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 	<link href="https://cdn.joomla.org/template/css/template_3.0.0.min.css" rel="stylesheet">
 	<style>
@@ -41,7 +41,7 @@
 		<div class="row-fluid">
 			<div class="span7">
 				<h1 class="page-title">
-					<a href="/">Prebuild Download Packages for PR %PRID%</a>
+					<a href="/">Prebuilt Download Packages for PR %PRID%</a>
 				</h1>
 			</div>
 			<div class="span5">
@@ -61,8 +61,8 @@
 			<ul class="nav menu nav-pills mod-list">
 				<li><a href="https://ci.joomla.org">Home</a></li>
 				<li><a href="%BUILDDRONEURL%">Build on Drone</a></li>
-				<li><a href="%PRISSUESURL%">Build on Tracker</a></li>
-				<li><a href="%PRGITHUBURL%">Build on Github</a></li>
+				<li><a href="%PRISSUESURL%">PR on Tracker</a></li>
+				<li><a href="%PRGITHUBURL%">PR on Github</a></li>
 			</ul>
 		</div>
 	</div>
@@ -77,19 +77,21 @@
 				<div class="item-page" itemscope="" itemtype="https://schema.org/Article">
 					<meta itemprop="inLanguage" content="en-GB">
 					<div class="page-header">
-						<h1> Pull Request %PRID% Builds </h1>
+						<h2>Help test Joomla!</h2>
 					</div>
 
 					<div itemprop="articleBody">
-						<p class="lead">Help test Joomla! code changes.</p>
-						<div class="alert alert-error"><strong>Warning!</strong> These builds are intended for testing purposes only and should never be used on production websites. <strong>Warning!</strong>
+						<div class="alert alert-error"><strong>Warning!</strong> These packages are for testing purposes only and should never be used on production websites. 
 						</div>
-						<p>The pull request builds are snapshots of the <a href="https://github.com/joomla/joomla-cms">development activity</a> for specific code change including new features and bug fixes. These
-						   builds are made available to make it easier for users to test their websites and extensions for potential issues with a specific pull request and provide feedback on ways to improve it
-						   before being merged in to the Joomla!.</p>
-						<p>As these builds are snapshots of a single pull request, it is more likely you may encounter an issue compared to the stable releases. If you have encountered an issue, please check
-							<a href="%PRISSUESURL%">our issue tracker</a>&nbsp;to see if it has already been reported; if a report hasn't been made, please report it so our community members can review the issue
-						   and make any needed fixes.</p>
+						<p>These pull request packages are snapshots of specific code changes including new features and bug fixes.</p>
+						<p>They are made available to make it easier for users to:
+						<ul>
+							<li>Test their websites and extensions for potential issues with a specific pull request.</li>
+							<li>Confirm that the pull request request works as described.</li> 
+							<li>Provide feedback on ways to improve it before being accepted.</li>
+						</ul>
+						<p>As these packages are snapshots of a single pull request you may encounter other issues compared to the stable release.</p>
+						<p>If you do encounter an issue, please check <a href="%PRISSUESURL%">our issue tracker</a> to see if it has already been reported. If a report hasn't been made, please report it so other members of the community can review and fix the issue.</p>
 
 						<div>
 							<div id="nightlyBuilds" class="accordion">
@@ -100,11 +102,11 @@
 											<div class="alert alert-info">These packages were built based on commit <a href="%PRCOMMITURL%" class="alert-link">%PRCOMMIT%</a> included in pull request
 												<a href="%PRISSUESURL%" class="alert-link">%PRID%</a>
 											</div>
-											<div class="alert alert-info">These packages were built: %DATE%</div>
+											<div class="alert alert-info">These packages were built on %DATE%</div>
 											<ul>
 												%PACKAGEFILES%
 											</ul>
-											<p>To always test the update component you can use this custom update server: <br /> <a href="%PRUPDATELISTURL%">%PRUPDATELISTURL%</a></p>
+											<p>You can test this package as an update by using this custom update server: <br /> <a href="%PRUPDATELISTURL%">%PRUPDATELISTURL%</a></p>
 										</div>
 									</div>
 								</div>

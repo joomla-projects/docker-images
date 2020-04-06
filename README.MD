@@ -1,6 +1,6 @@
 # Docker Container for packaging Joomla (4)
 
-This Docker Container build packages for download. 
+This Docker Container build packages for download for PRs.
 
 ### Script steps
 
