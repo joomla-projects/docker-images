@@ -15,9 +15,13 @@ RUN set -xe \
     $PHPIZE_DEPS libmemcached-dev cyrus-sasl-dev
 
 # Excluding memcached for now since it doesn't compile
-RUN docker-php-source extract \
-    && docker-php-ext-configure gd --with-gd --with-jpeg --with-png \
+RUN docker-php-source extract
+RUN docker-php-ext-install mysqli pdo_mysql pgsql pdo_pgsql
+RUN docker-php-ext-configure gd --with-gd --with-jpeg --with-png \
     --with-zlib --with-freetype --enable-gd-native-ttf \
-    #&& docker-php-ext-get memcached $MEMCACHED_VERSION \
-    && docker-php-ext-get redis $REDIS_VERSION \
-    && docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql redis #memcached
+    && docker-php-ext-install gd
+# RUN docker-php-ext-get memcached $MEMCACHED_VERSION \
+#     && docker-php-ext-install memcached
+# RUN docker-php-ext-get redis $REDIS_VERSION \
+#     && docker-php-ext-install redis
+
