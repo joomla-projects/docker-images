@@ -49,16 +49,16 @@ if ! [ -d .git ]; then
     git clone https://github.com/joomla/joomla-cms.git .
 fi
 
-git checkout $BRANCH_NAME
+# Get the nightly hash of the J4 build
+URL=`wget -q -O - https://developer.joomla.org/nightly-builds.html | tr '"' '\n' | tr "'" '\n' | grep -e '^https://github.com/joomla/joomla-cms/tree' -e'^//' | uniq | tail -1 | xargs`
+J4HASH=$(echo $URL| cut -d'/' -f 7)
 
-# git remote update
-if ! git diff --quiet remotes/origin/HEAD; then
-   echo "Updating master repo..."
-   git pull
-   composer validate --no-check-all --strict
-   composer install --no-progress --no-suggest
-   npm i --unsafe-perm
-fi
+echo "Found Joomla 4 hash" ${J4HASH}
+
+# Checkout the nightly build
+git checkout 4.0-dev
+git pull
+git checkout ${J4HASH}
 
 # Move back up
 cd ..
