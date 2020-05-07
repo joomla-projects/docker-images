@@ -5,18 +5,39 @@
 ##########
 
 echo "#################################################"
-echo "Updating Joomla! 4.0-dev reference (if necassary)"
+echo "Updating Joomla! 4.0-dev reference (if necessary)"
 echo "#################################################"
 
 echo "Current directory: "$(pwd)
 
 current_directory=$(pwd)
 
+# Check if master repository folder is set
+if [ -z "$CMP_MASTER_FOLDER" ]; then
+    echo "Master folder hasn't been set, setting it to joomla-cms"
+    CMP_MASTER_FOLDER="joomla-cms"
+fi
+
 if ! [ -d $CMP_MASTER_FOLDER ]; then
-    # Reference cache not mounted
-    echo "Reference cache not mounted"
-    # exit 1
-    mkdir $CMP_MASTER_FOLDER # DEBUG ONLY
+    echo "Master folder does not exist, creating it"
+    mkdir $CMP_MASTER_FOLDER
+fi
+
+# Check if slave folder is set
+if [ -z "$CMP_SLAVE_FOLDER" ]; then
+    echo "Slave folder hasn't been set, setting it to joomla4"
+    CMP_SLAVE_FOLDER="joomla4"
+fi
+
+if [ -d $CMP_SLAVE_FOLDER ]; then
+echo ""
+	#rm -rf $CMP_SLAVE_FOLDER
+fi
+
+# Check if the slave folder exists
+if ! [ -d $CMP_SLAVE_FOLDER ]; then
+    echo "Slave folder does not exist, creating it"
+    mkdir $CMP_SLAVE_FOLDER
 fi
 
 cd $CMP_MASTER_FOLDER
@@ -24,47 +45,83 @@ echo "Current directory: "$(pwd)
 
 if ! [ -d .git ]; then
     # Directory is not a git repository
-    echo "Git repository not cloned"
+    echo "Git repository not cloned, cloning the Joomla CMS repository"
     git clone https://github.com/joomla/joomla-cms.git .
 fi
 
-git checkout $BRANCH_NAME
-git remote update
-if ! git diff --quiet remotes/origin/HEAD; then
-    echo "Updating reference repo..."
-    git pull
-    composer validate --no-check-all --strict
-    composer install --no-progress --no-suggest
-    npm ci --unsafe-perm
-fi
-cd $current_directory
+# Get the nightly hash of the J4 build
+URL=`wget -q -O - https://developer.joomla.org/nightly-builds.html | tr '"' '\n' | tr "'" '\n' | grep -e '^https://github.com/joomla/joomla-cms/tree' -e'^//' | uniq | tail -1 | xargs`
+J4HASH=$(echo $URL| cut -d'/' -f 7)
+
+echo "Found Joomla 4 hash" ${J4HASH}
+
+# Checkout the nightly build
+git checkout 4.0-dev
+git pull
+git checkout ${J4HASH}
+
+# Move back up
+cd ..
+
+# Copy the master folder to the slave folder
+echo ""
+echo "Copying the master folder to the slave folder"
+cp -R $CMP_MASTER_FOLDER'/.' $CMP_SLAVE_FOLDER
+
+#########################
+# Checkout pull request #
+#########################
+echo ""
+echo "#####################"
+echo "Checkout pull request"
+echo "#####################"
+
+cd $CMP_SLAVE_FOLDER
 echo "Current directory: "$(pwd)
+
+# Download the pull request diff and apply it
+echo "Apply pull request $DRONE_PULL_REQUEST"
+curl -L https://github.com/joomla/joomla-cms/pull/"$DRONE_PULL_REQUEST".diff | git apply --binary --reject 2> apply.log
+
+# Check if there are any failures
+if cat apply.log | grep "failed:"; then
+   rm apply.log
+   echo "Cannot apply patch. Failures found."
+   exit 1
+fi
+
+# Remove the log file as we no longer need it
+rm apply.log
+
+# Composer check
+if git status | grep "modified:" | grep -E "libraries/vendor|composer.json|composer.lock',"; then
+   echo "Composer changes, running composer"
+   composer validate --no-check-all --strict
+   composer install --no-progress --no-suggest
+fi
+
+# NPM change check
+if git status | grep "modified:" | grep -E "administrator/components/com_media/resources/scripts|administrator/components/com_media/resources/styles|administrator/components/com_media/package-lock.json|administrator/components/com_media/package.json|administrator/components/com_media/webpack.config.js|build/media_source|build.js|package-lock.json|package.json"; then
+   echo "NPM changes, running npm"
+   npm i --unsafe-perm
+fi
+
+# Move back up
+cd ..
 
 ########
 # DIFF #
 ########
-
+echo ""
 echo "##################################"
 echo "Creating diff between repositories"
 echo "##################################"
 echo "Current directory: "$(pwd)
 
 # Check if archive name is set
-if [ -z "$CMP_ARCHIVE" ]; then
-    echo "Build Archive name hasn't been set"
-    CMP_ARCHIVE="build"
-fi
-
-# Check if master repository folder is set
-if [ -z "$CMP_MASTER_FOLDER" ]; then
-    echo "Master folder hasn't been set"
-    CMP_MASTER_FOLDER="../joomla-cms"
-fi
-
-# Check if master repository folder is set
-if [ -z "$CMP_SLAVE_FOLDER" ]; then
-    echo "Slave folder hasn't been set"
-    $CMP_SLAVE_FOLDER="$(pwd)/../joomla4"
+if [ -z "$CMP_ARCHIVE_NAME" ]; then
+    echo "Build Archive name hasn't been set, setting it to build.zip"
+    CMP_ARCHIVE_NAME="build"
 fi
 
 # Declare variables (can be set from outside)
@@ -93,6 +150,8 @@ echo "Finding differences between builds..."
              --exclude=tmp \
         $CMP_MASTER_FOLDER $CMP_SLAVE_FOLDER >> $CMP_DIFF_LOG
 
+cat $CMP_DIFF_LOG
+
 # Create list of files that only exist in master directory
 cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER/+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
 cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER:+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'|.|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
@@ -117,13 +176,8 @@ do
     cp --parents -r $file $current_directory"/"$CMP_BUILD_DIR
 done < $current_directory"/"$CMP_ONLY_IN_SLAVE_LOG
 
-cd $current_directory
-echo "Current directory: "$(pwd)
-
 # Copy all files that differ into build folder
 echo "COPY DIFFERING FILES"
-cd $CMP_SLAVE_FOLDER
-echo "Current directory: "$(pwd)
 
 while IFS="" read -r file || [ -n "$file" ]
 do
@@ -148,15 +202,33 @@ else
     echo "No deleted files found..."
 fi
 
+echo "Current directory: "$(pwd)
+
 # Zip build folder
+if ! [ "$(ls -A $CMP_BUILD_DIR)" ]; then
+	echo "No files and folders found in build dir " $CMP_BUILD_DIR
+	exit 1
+fi;
+
 echo "Zipping build folder..."
 pushd $CMP_BUILD_DIR
-zip -qr $CMP_ARCHIVE *
+echo "Current directory: "$(pwd)
+zip -qr $CMP_ARCHIVE_NAME".zip" *
+ls -ltrh .
 popd
+
+echo "Current directory: "$(pwd)
+
+# Create the upload directory
+if ! [ -d upload ]; then
+    # Reference cache not mounted
+    echo "Upload folder does not exist, creating it"
+    mkdir upload
+fi
+
 # Move files to upload directory
-mkdir upload
-mv "$CMP_BUILD_DIR/$CMP_ARCHIVE.zip" ./upload
-echo "Finished zipping build."
+mv "$CMP_BUILD_DIR/$CMP_ARCHIVE_NAME.zip" ./upload
+echo "Finished zipping build. Files are located in "$(pwd)"upload"
 
 # Clean up temporary files
 rm -rf $CMP_TMP

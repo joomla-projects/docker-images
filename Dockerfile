@@ -1,6 +1,6 @@
 FROM alpine:edge
 
-LABEL authors="Sebastian Enns, Lukas Maximilian Kimpel, Hannes Papenberg, Harald Leithner"
+LABEL authors="Sebastian Enns, Lukas Maximilian Kimpel, Hannes Papenberg, Harald Leithner Roland Dalmulder"
 
 RUN apk --no-cache add \
         libressl \
@@ -18,6 +18,7 @@ RUN apk --no-cache add \
         php-zip \
         php-xml \
         php-dom \
+        php-gmp \
         php-iconv \
         php-gd \
         php-ldap \
