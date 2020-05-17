@@ -58,8 +58,10 @@ echo "Found Joomla 4 hash" ${J4HASH}
 # Checkout the nightly build
 echo "Checkout 4.0 dev branch"
 git checkout 4.0-dev
+echo "Stash any changes"
+git stash
 echo "Pull the changes"
-git pull -f
+git pull
 echo "Checkout $J4HASH branch"
 git checkout ${J4HASH}
 
