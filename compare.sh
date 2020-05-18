@@ -1,52 +1,22 @@
 #!/bin/bash
 
-##########
-# UPDATE #
-##########
-
 echo "#################################################"
 echo "Updating Joomla! 4.0-dev reference (if necessary)"
 echo "#################################################"
 
+# We are in the J4.0 branch of the pull request
 echo "Current directory: "$(pwd)
-
 current_directory=$(pwd)
 
 # Check if master repository folder is set
 if [ -z "$CMP_MASTER_FOLDER" ]; then
     echo "Master folder hasn't been set, setting it to joomla-cms"
-    CMP_MASTER_FOLDER="joomla-cms"
+    CMP_MASTER_FOLDER="reference"
 fi
 
 if ! [ -d $CMP_MASTER_FOLDER ]; then
     echo "Master folder does not exist, creating it"
     mkdir $CMP_MASTER_FOLDER
-fi
-
-# Check if slave folder is set
-if [ -z "$CMP_SLAVE_FOLDER" ]; then
-    echo "Slave folder hasn't been set, setting it to joomla4"
-    CMP_SLAVE_FOLDER="joomla4"
-fi
-
-if [ -d $CMP_SLAVE_FOLDER ]; then
-echo ""
-	#rm -rf $CMP_SLAVE_FOLDER
-fi
-
-# Check if the slave folder exists
-if ! [ -d $CMP_SLAVE_FOLDER ]; then
-    echo "Slave folder does not exist, creating it"
-    mkdir $CMP_SLAVE_FOLDER
-fi
-
-cd $CMP_MASTER_FOLDER
-echo "Current directory: "$(pwd)
-
-if ! [ -d .git ]; then
-    # Directory is not a git repository
-    echo "Git repository not cloned, cloning the Joomla CMS repository"
-    git clone https://github.com/joomla/joomla-cms.git .
 fi
 
 # Get the nightly hash of the J4 build
@@ -62,27 +32,22 @@ echo "Stash any changes"
 git stash
 echo "Pull the changes"
 git pull
-echo "Checkout $J4HASH branch"
+echo "Checkout $J4HASH commit"
 git checkout ${J4HASH}
 
-# Move back up
-cd ..
-
-# Copy the master folder to the slave folder
+# Copy the source folder to the pull request folder
 echo ""
-echo "Copying the master folder to the slave folder"
-cp -R $CMP_MASTER_FOLDER'/.' $CMP_SLAVE_FOLDER
+echo "Copying the source folder to the reference folder"
+cp -R . $CMP_MASTER_FOLDER
 
-#########################
-# Checkout pull request #
-#########################
+# Go to the pull request folder
+cd $CMP_MASTER_FOLDER
+echo "Current directory: "$(pwd)
+
 echo ""
 echo "#####################"
 echo "Checkout pull request"
 echo "#####################"
-
-cd $CMP_SLAVE_FOLDER
-echo "Current directory: "$(pwd)
 
 # Download the pull request diff and apply it
 echo "Apply pull request $DRONE_PULL_REQUEST"
@@ -111,17 +76,13 @@ if git status | grep "modified:" | grep -E "administrator/components/com_media/r
    npm i --unsafe-perm
 fi
 
-# Move back up
-cd ..
+# All done move back to the top for the diffs
+cd /
 
-########
-# DIFF #
-########
 echo ""
 echo "##################################"
 echo "Creating diff between repositories"
 echo "##################################"
-echo "Current directory: "$(pwd)
 
 # Check if archive name is set
 if [ -z "$CMP_ARCHIVE_NAME" ]; then
@@ -130,7 +91,7 @@ if [ -z "$CMP_ARCHIVE_NAME" ]; then
 fi
 
 # Declare variables (can be set from outside)
-CMP_TMP="tmp"
+CMP_TMP="/tmp"
 CMP_BUILD_DIR="$CMP_TMP/build"
 CMP_DIFF_LOG="$CMP_TMP/diff.log"
 CMP_ONLY_IN_MASTER_LOG="$CMP_TMP/only_in_master.log"
@@ -157,7 +118,7 @@ echo "Finding differences between builds..."
 
 cat $CMP_DIFF_LOG
 
-# Create list of files that only exist in master directory
+# Create list of files that only exist in pull request directory
 cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER/+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
 cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER:+" | sed -n 's/://p' | sed 's|'$CMP_MASTER_FOLDER'|.|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_MASTER_LOG
 
@@ -165,33 +126,32 @@ cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_MASTER_FOLDER:+" | sed -n 's/://p' | 
 cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_SLAVE_FOLDER/+" | sed -n 's/://p' | sed 's|'$CMP_SLAVE_FOLDER'/|./|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_SLAVE_LOG
 cat $CMP_DIFF_LOG | grep -E "^Only in $CMP_SLAVE_FOLDER:+" | sed -n 's/://p' | sed 's|'$CMP_SLAVE_FOLDER'|.|' | awk '{print $3"/"$4}' >> $CMP_ONLY_IN_SLAVE_LOG
 
-# Create list of files that differ from master
+# Create list of files that differ from pull request
 cat $CMP_DIFF_LOG | grep -Eo " and $CMP_SLAVE_FOLDER/[^[:space:]]+" | grep -Eo "$CMP_SLAVE_FOLDER/[^[:space:]]+" | sed 's|'$CMP_SLAVE_FOLDER'/|./|' >> $CMP_DIFFERS_FROM_LOG
 
 echo "Finished finding differences between builds."
 
-# Copy all files that only occur in slave into build folder
-echo "COPYING NEW FILES"
-cd $CMP_SLAVE_FOLDER
+# Copy all files that only occur in pull request into build folder
 echo "Current directory: "$(pwd)
+echo "COPYING NEW FILES"
 
 while IFS="" read -r file || [ -n "$file" ]
 do
-    echo "Copying file " $file "..."
-    cp --parents -r $file $current_directory"/"$CMP_BUILD_DIR
-done < $current_directory"/"$CMP_ONLY_IN_SLAVE_LOG
+    echo "Copying file " $file " to " $CMP_BUILD_DIR
+    cp --parents -r $file $CMP_BUILD_DIR
+done < $CMP_ONLY_IN_SLAVE_LOG
 
 # Copy all files that differ into build folder
 echo "COPY DIFFERING FILES"
 
+cd $CMP_MASTER_FOLDER
+echo "Current directory: "$(pwd)
+
 while IFS="" read -r file || [ -n "$file" ]
 do
-    echo "Copying file " $file "..."
-    cp --parents -r $file $current_directory"/"$CMP_BUILD_DIR
-done < $current_directory"/"$CMP_DIFFERS_FROM_LOG
-
-cd $current_directory
-echo "Current directory: "$(pwd)
+    echo "Copying file " $file " to " $CMP_BUILD_DIR
+    cp --parents -r $file $CMP_BUILD_DIR
+done < $CMP_DIFFERS_FROM_LOG
 
 # Move deleted files list to build folder
 while IFS="" read -r file || [ -n "$file" ]
@@ -201,13 +161,11 @@ do
 done < $CMP_ONLY_IN_MASTER_LOG
 
 if [ -f $CMP_DELETED_FILES_LOG ]; then
-    echo "Moving file " $CMP_DELETED_FILES_LOG "..."
+    echo "Moving file " $CMP_DELETED_FILES_LOG " to " $CMP_BUILD_DIR
     mv $CMP_DELETED_FILES_LOG $CMP_BUILD_DIR
 else
     echo "No deleted files found..."
 fi
-
-echo "Current directory: "$(pwd)
 
 # Zip build folder
 if ! [ "$(ls -A $CMP_BUILD_DIR)" ]; then
@@ -215,14 +173,16 @@ if ! [ "$(ls -A $CMP_BUILD_DIR)" ]; then
 	exit 1
 fi;
 
+cd /
+
 echo "Zipping build folder..."
-pushd $CMP_BUILD_DIR
+cd $CMP_BUILD_DIR
 echo "Current directory: "$(pwd)
 zip -qr $CMP_ARCHIVE_NAME".zip" *
 ls -ltrh .
-popd
 
-echo "Current directory: "$(pwd)
+# Move back to the top for the upload folder
+cd /
 
 # Create the upload directory
 if ! [ -d upload ]; then
