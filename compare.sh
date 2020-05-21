@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Temoporary disabled"
+exit 1
+
 echo "#################################################"
 echo "Updating Joomla! 4.0-dev reference (if necessary)"
 echo "#################################################"
