@@ -6,7 +6,7 @@ MAINTAINER Yves Hoppe <yves@compojoom.com>, Robert Deutz <rdeutz@googemail.com>
 ENV HOME /root
 
 # update the package sources
-RUN apt-get update -qq
+RUN apt-get update
 
 # we use the enviroment variable to stop debconf from asking questions..
 RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y mariadb-server libqtgui4 mariadb-client apache2 php7.2 \
