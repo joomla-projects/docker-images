@@ -1,6 +1,6 @@
 # Joomla! System tests
 FROM ubuntu:bionic
-MAINTAINER Yves Hoppe <yves@compojoom.com>, Robert Deutz <rdeutz@googemail.com>
+MAINTAINER Yves Hoppe <yves@compojoom.com>, Robert Deutz <rdeutz@googemail.com>, Harald Leithner <harald.leithner@community.joomla.org>
 
 # Set correct environment variables.
 ENV HOME /root
@@ -43,7 +43,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=bin --file
 RUN composer self-update
 RUN git config --global http.postBuffer 524288000
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN wget https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
 RUN dpkg -i google-chrome*.deb
 
 RUN apt-get upgrade -y
