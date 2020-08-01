@@ -43,12 +43,22 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=bin --file
 RUN composer self-update
 RUN git config --global http.postBuffer 524288000
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
+# Beta Version if needed
+#RUN wget https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 RUN dpkg -i google-chrome*.deb
+
+# Get the matching driver version for the installed google chrome
+RUN wget "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_`dpkg --info google-chrome*.deb | grep Version | awk '{print $2}' | cut -d . -f 1`" -O chrome_driver_version
+RUN echo -n \'`cat chrome_driver_version`\', > chrome_driver_version_tmp 
 
 RUN apt-get upgrade -y
 
 RUN npm install -g selenium-standalone
+
+# Replace default version with requried chrome version 
+RUN sed -i '/chrome: {/!b;n;c\      version: '`cat chrome_driver_version_tmp` /usr/lib/node_modules/selenium-standalone/lib/default-config.js
+
 RUN selenium-standalone install
 
 # Start Apache and MySQL
