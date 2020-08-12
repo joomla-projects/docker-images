@@ -1,41 +1,25 @@
-FROM php:5.6-fpm-alpine
+# FROM debian:stretch
+FROM php:5.6-apache
 
 LABEL authors="Hannes Papenberg"
 
-RUN apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS
-RUN apk --no-cache add zlib-dev libpng-dev postgresql-dev libmcrypt-dev pcre-dev libmemcached-dev curl
-
-RUN apk add --no-cache \
-        freetype \
-        libpng \
-        libjpeg-turbo \
-        freetype-dev \
-        libpng-dev \
-        jpeg-dev \
-        libjpeg \
-        libjpeg-turbo-dev
-
-RUN docker-php-ext-configure gd \
-        --with-freetype-dir=/usr/lib/ \
-        --with-png-dir=/usr/lib/ \
-        --with-jpeg-dir=/usr/lib/ \
-        --with-gd
-
-RUN NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && docker-php-ext-install -j${NPROC} gd
-
-RUN docker-php-ext-install mysql mysqli pdo_mysql pgsql pdo_pgsql mcrypt
-
-RUN pecl install xdebug-2.5.5
-RUN pecl install memcached-2.2.0
-RUN pecl install redis-2.2.8
-
-RUN echo 'memory_limit=1G' > /usr/local/etc/php/conf.d/memory-limit.ini
-
+# Install
+RUN rm /etc/apt/preferences.d/no-debian-php
+RUN apt-get update
+RUN DEBIAN_FRONTEND='noninteractive' apt install -y ca-certificates apt-transport-https wget gnupg2 \
+   && wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add - \
+   && echo "deb https://packages.sury.org/php/ stretch main" > /etc/apt/sources.list.d/php.list
+RUN apt-get update
+RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y git php5.6 php5.6-cli php5.6-memcache php5.6-memcached php5.6-xdebug \
+	  curl php5.6-gd php5.6-mcrypt php5.6-mysql php5.6-pgsql php5.6-sqlite
+RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done
+RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y mysql-client postgresql-client
+RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /etc/php/5.6/cli/php.ini
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
    && php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
    && php composer-setup.php \
    && php -r "unlink('composer-setup.php');" \
    && mv composer.phar /usr/local/bin/composer
 RUN cd /usr/local/bin \
-   && curl https://phar.phpunit.de/phpunit-4.8.35.phar --output phpunit --insecure \
+   && wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-4.8.35.phar \
    && chmod +x phpunit
