@@ -3,7 +3,7 @@ FROM php:7.4-apache
 LABEL authors="Hannes Papenberg"
 
 RUN apt-get update
-RUN apt-get install -y autoconf gcc wget zlib1g-dev unzip libzip-dev libpng-dev libfreetype6-dev \
+RUN apt-get install -y autoconf gcc git wget zlib1g-dev unzip libzip-dev libpng-dev libfreetype6-dev \
 	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev
 
 RUN docker-php-ext-configure gd \
