@@ -1,22 +1,35 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.2-apache
 
 LABEL authors="Hannes Papenberg"
 
-RUN apk --no-cache add zlib-dev libpng-dev postgresql-dev autoconf gcc
+RUN apt-get update
+RUN apt-get install -y autoconf gcc wget zlib1g-dev libpng-dev libfreetype6-dev \
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev
 
-RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql
+RUN docker-php-ext-configure gd \
+	--with-freetype-dir=/usr/lib/ \
+	--with-png-dir=/usr/lib/ \
+	--with-jpeg-dir=/usr/lib/ \
+	--with-gd
 
-ENV MEMCACHED_DEPS zlib-dev libmemcached-dev cyrus-sasl-dev
-RUN apk add --no-cache --update libmemcached-libs zlib
-RUN set -xe \
-    && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
-    && apk add --no-cache --update --virtual .memcached-deps $MEMCACHED_DEPS \
-    && pecl install memcached \
-    && echo "extension=memcached.so" > /usr/local/etc/php/conf.d/20_memcached.ini \
-    && rm -rf /usr/share/php7 \
-    && rm -rf /tmp/* \
-    && apk del .memcached-deps .phpize-deps
+RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap
 
-RUN apk add --no-cache --update gcc make autoconf libc-dev \
-	&& pecl install redis \
+RUN pecl install memcached \
+	&& docker-php-ext-enable memcached
+
+RUN pecl install redis \
 	&& docker-php-ext-enable redis
+
+RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
+	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+# We would love to check the signature of the installer, but since the signature changes very frequently, we can't really commit it to the repository
+#	&& php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+	&& php composer-setup.php \
+	&& php -r "unlink('composer-setup.php');" \
+	&& mv composer.phar /usr/local/bin/composer
+
+RUN cd /usr/local/bin \
+	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
+	&& chmod +x phpunit
