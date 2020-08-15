@@ -1,27 +1,36 @@
-FROM phpdaily/php:8.0.0-dev-fpm-alpine
+FROM phpdaily/php:8.0.0-dev-apache-buster
 
 LABEL authors="Hannes Papenberg"
 
-COPY docker-php-ext-get /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-php-ext-get
+RUN apt-get update
+RUN apt-get install -y autoconf gcc wget zlib1g-dev unzip libzip-dev libpng-dev libfreetype6-dev \
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev
 
-ENV MEMCACHED_VERSION 3.1.3
-ENV REDIS_VERSION 5.0.2
+RUN docker-php-ext-configure gd \
+	--with-freetype \
+	--with-jpeg \
+	--with-webp \
+	--enable-gd
 
-RUN set -xe \
-    && apk --no-cache add zlib-dev libpng-dev postgresql-dev autoconf gcc \
-    freetype libpng libjpeg-turbo freetype-dev jpeg-dev libjpeg \
-    libjpeg-turbo-dev gcc make libc-dev libmemcached-libs zlib \
-    $PHPIZE_DEPS libmemcached-dev cyrus-sasl-dev
+RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap
 
-# Excluding memcached for now since it doesn't compile
-RUN docker-php-source extract
-RUN docker-php-ext-install mysqli pdo_mysql pgsql pdo_pgsql
-RUN docker-php-ext-configure gd --with-gd --with-jpeg --with-png \
-    --with-zlib --with-freetype --enable-gd-native-ttf \
-    && docker-php-ext-install gd
-# RUN docker-php-ext-get memcached $MEMCACHED_VERSION \
-#     && docker-php-ext-install memcached
-# RUN docker-php-ext-get redis $REDIS_VERSION \
-#     && docker-php-ext-install redis
+RUN pecl install memcached \
+	&& docker-php-ext-enable memcached
 
+# Unfortunately redis doesn't work yet in PHP8.0
+# RUN pecl install redis \
+#	&& docker-php-ext-enable redis
+
+RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
+	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+# We would love to check the signature of the installer, but since the signature changes very frequently, we can't really commit it to the repository
+#	&& php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+	&& php composer-setup.php \
+	&& php -r "unlink('composer-setup.php');" \
+	&& mv composer.phar /usr/local/bin/composer
+
+RUN cd /usr/local/bin \
+	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
+	&& chmod +x phpunit
