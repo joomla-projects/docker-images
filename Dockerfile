@@ -1,25 +1,36 @@
-# FROM debian:stretch
 FROM php:5.6-apache
 
 LABEL authors="Hannes Papenberg"
 
-# Install
-RUN rm /etc/apt/preferences.d/no-debian-php
 RUN apt-get update
-RUN DEBIAN_FRONTEND='noninteractive' apt install -y ca-certificates apt-transport-https wget gnupg2 \
-   && wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add - \
-   && echo "deb https://packages.sury.org/php/ stretch main" > /etc/apt/sources.list.d/php.list
-RUN apt-get update
-RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y git php5.6 php5.6-cli php5.6-memcache php5.6-memcached php5.6-xdebug \
-	  curl php5.6-gd php5.6-mcrypt php5.6-mysql php5.6-pgsql php5.6-sqlite
-RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done
-RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y mysql-client postgresql-client
-RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /etc/php/5.6/cli/php.ini
+RUN apt-get install -y autoconf gcc git wget zlib1g-dev unzip libpng-dev libfreetype6-dev \
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev
+
+RUN docker-php-ext-configure gd \
+	--with-freetype-dir=/usr/lib/ \
+	--with-png-dir=/usr/lib/ \
+	--with-jpeg-dir=/usr/lib/ \
+	--with-gd
+
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
+RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap
+
+RUN pecl install memcached-2.2.0 \
+	&& docker-php-ext-enable memcached
+
+RUN pecl install redis-4.3.0 \
+	&& docker-php-ext-enable redis
+
+RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
+	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
+
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-   && php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-   && php composer-setup.php \
-   && php -r "unlink('composer-setup.php');" \
-   && mv composer.phar /usr/local/bin/composer
+# We would love to check the signature of the installer, but since the signature changes very frequently, we can't really commit it to the repository
+#	&& php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+	&& php composer-setup.php \
+	&& php -r "unlink('composer-setup.php');" \
+	&& mv composer.phar /usr/local/bin/composer
+
 RUN cd /usr/local/bin \
-   && wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-4.8.35.phar \
-   && chmod +x phpunit
+	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-5.7.27.phar \
+	&& chmod +x phpunit
