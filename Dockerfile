@@ -4,7 +4,7 @@ LABEL authors="Hannes Papenberg"
 
 RUN apt-get update
 RUN apt-get install -y autoconf gcc git wget zlib1g-dev unzip libzip-dev libpng-dev libfreetype6-dev \
-	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev patch
 
 RUN docker-php-ext-configure gd \
 	--with-freetype \
@@ -31,6 +31,5 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& php -r "unlink('composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
 
-RUN cd /usr/local/bin \
-	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
-	&& chmod +x phpunit
+RUN composer --ignore-platform-reqs global require phpunit/phpunit:9.*
+ENV PATH="/root/.composer/vendor/bin:$PATH"
