@@ -13,7 +13,7 @@ RUN docker-php-ext-configure gd \
 	--with-gd
 
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap mbstring
+RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap mbstring ftp
 
 RUN pecl install memcached-2.2.0 \
 	&& docker-php-ext-enable memcached
