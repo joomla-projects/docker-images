@@ -3,8 +3,8 @@ FROM php:5.5-apache
 LABEL authors="Hannes Papenberg"
 
 RUN apt-get update
-RUN apt-get install -y autoconf gcc git wget zlib1g-dev unzip libpng-dev libfreetype6-dev \
-	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev
+RUN apt-get install -y autoconf gcc git wget libbz2-dev unzip libpng-dev libfreetype6-dev \
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev libsqlite3-dev
 
 RUN docker-php-ext-configure gd \
 	--with-freetype-dir=/usr/lib/ \
@@ -13,13 +13,16 @@ RUN docker-php-ext-configure gd \
 	--with-gd
 
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap ftp
+RUN docker-php-ext-install bz2 ftp gd exif mysqli pdo_mysql pgsql pdo_pgsql pdo_sqlite zip ldap mbstring ftp opcache
 
 RUN pecl install memcached-2.2.0 \
 	&& docker-php-ext-enable memcached
 
 RUN pecl install redis-4.3.0 \
 	&& docker-php-ext-enable redis
+
+RUN pecl install apcu-4.0.11 \
+	&& docker-php-ext-enable apcu
 
 RUN echo 'memory_limit=-1' > /usr/local/etc/php/php.ini
 
