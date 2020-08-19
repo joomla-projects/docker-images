@@ -3,8 +3,8 @@ FROM phpdaily/php:8.0.0-dev-apache-buster
 LABEL authors="Hannes Papenberg"
 
 RUN apt-get update
-RUN apt-get install -y autoconf gcc git wget zlib1g-dev unzip libzip-dev libpng-dev libfreetype6-dev \
-	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev patch
+RUN apt-get install -y autoconf gcc git wget libbz2-dev unzip libpng-dev libfreetype6-dev libonig-dev\
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev libsqlite3-dev libssl-dev libzip-dev patch
 
 RUN docker-php-ext-configure gd \
 	--with-freetype \
@@ -12,7 +12,8 @@ RUN docker-php-ext-configure gd \
 	--with-webp \
 	--enable-gd
 
-RUN docker-php-ext-install gd mysqli pdo_mysql pgsql pdo_pgsql zip ldap
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
+RUN docker-php-ext-install bz2 ftp gd exif mysqli pdo_mysql pgsql pdo_pgsql pdo_sqlite zip ldap mbstring ftp opcache
 
 RUN pecl install memcached \
 	&& docker-php-ext-enable memcached
@@ -20,6 +21,9 @@ RUN pecl install memcached \
 # Unfortunately redis doesn't work yet in PHP8.0
 # RUN pecl install redis \
 #	&& docker-php-ext-enable redis
+
+RUN pecl install apcu \
+	&& docker-php-ext-enable apcu
 
 RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
 	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
@@ -31,5 +35,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& php -r "unlink('composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
 
-RUN composer --ignore-platform-reqs global require phpunit/phpunit:9.*
+# We currently have issues with PHPUnit and PHP8 in our setup, so not adding this here.
+# RUN composer global require phpunit/phpunit
 ENV PATH="/root/.composer/vendor/bin:$PATH"
