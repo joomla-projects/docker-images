@@ -1,5 +1,5 @@
 FROM ubuntu:12.04
-MAINTAINER Alexander Schenkel <alex@alexi.ch>
+MAINTAINER "Hannes Papenberg, adapted from Alexander Schenkel <alex@alexi.ch>"
 
 VOLUME ["/var/www/html"]
 
@@ -7,13 +7,20 @@ RUN apt-get update && \
 	apt-get install -y \
 		apache2 \
 		git \
+		libapache2-mod-php5 \
+		php-apc \
+		php-pear \
 		php5 \
 		php5-cli \
-		libapache2-mod-php5 \
+		php5-curl \
+		php5-dev \
 		php5-gd \
 		php5-ldap \
+		php5-memcached \
 		php5-mysql \
 		php5-pgsql \
+		pkg-config \
+		make \
 		unzip \
 		wget
 
@@ -26,6 +33,9 @@ RUN chmod +x /usr/local/bin/composer
 RUN cd /usr/local/bin \
 	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-4.8.36.phar \
 	&& chmod +x phpunit
+
+RUN pecl channel-update pecl.php.net && pecl install redis-4.3.0
+RUN echo extension=redis.so > /etc/php5/conf.d/redis.ini
 
 COPY apache_default /etc/apache2/sites-available/default
 COPY run /usr/local/bin/run
