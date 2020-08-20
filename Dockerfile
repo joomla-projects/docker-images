@@ -33,6 +33,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& php composer-setup.php \
 	&& php -r "unlink('composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
+ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 RUN cd /usr/local/bin \
 	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-5.7.27.phar \
