@@ -34,6 +34,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& php composer-setup.php \
 	&& php -r "unlink('composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
+ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 # We currently have issues with PHPUnit and PHP8 in our setup, so not adding this here.
 # RUN composer global require phpunit/phpunit
