@@ -38,3 +38,11 @@ ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 RUN cd /usr/local/bin \
 	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
 	&& chmod +x phpunit
+
+RUN cd /usr/local/bin \
+	&& wget -O phpcpd --no-check-certificate https://phar.phpunit.de/phpcpd.phar \
+	&& chmod +x phpcpd
+
+RUN cd /usr/local/bin \
+	&& wget -O phploc --no-check-certificate https://phar.phpunit.de/phploc.phar \
+	&& chmod +x phploc
