@@ -29,6 +29,7 @@ RUN echo 'memory_limit=-1' > /usr/local/lib/php.ini
 # Unfortunately this ancient linux has issues with reaching getcomposer.org, so we keep our own/old composer version
 COPY composer /usr/local/bin
 RUN chmod +x /usr/local/bin/composer
+ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 RUN cd /usr/local/bin \
 	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-4.8.36.phar \
