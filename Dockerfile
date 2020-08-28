@@ -3,8 +3,9 @@ FROM php:5.4-apache
 LABEL authors="Hannes Papenberg"
 
 RUN apt-get update
-RUN apt-get install -y autoconf gcc git wget libbz2-dev unzip libpng-dev libfreetype6-dev \
-	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev libsqlite3-dev
+RUN apt-get install -y autoconf gcc git libbz2-dev libpng-dev libfreetype6-dev \
+	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev \
+	libsqlite3-dev unzip wget patch mysql-client postgresql-client
 
 RUN docker-php-ext-configure gd \
 	--with-freetype-dir=/usr/lib/ \
