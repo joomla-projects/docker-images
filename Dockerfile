@@ -2,6 +2,7 @@ FROM php:5.6-apache
 
 LABEL authors="Hannes Papenberg"
 
+RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
 RUN apt-get update
 RUN apt-get install -y autoconf gcc git wget libbz2-dev unzip libpng-dev libfreetype6-dev \
 	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev \
