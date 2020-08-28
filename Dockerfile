@@ -8,6 +8,7 @@ RUN apt-get update && \
 		apache2 \
 		git \
 		libapache2-mod-php5 \
+		mysql-client \
 		php-apc \
 		php-pear \
 		php5 \
@@ -20,7 +21,9 @@ RUN apt-get update && \
 		php5-mysql \
 		php5-pgsql \
 		pkg-config \
+		postgresql-client \
 		make \
+		patch \
 		unzip \
 		wget
 
