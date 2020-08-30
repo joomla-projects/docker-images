@@ -30,7 +30,8 @@ RUN pecl install apcu-4.0.11 \
 	&& echo "\napc.enable=1\napc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 
 RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
-	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
+	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development \
+	&& cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 # We would love to check the signature of the installer, but since the signature changes very frequently, we can't really commit it to the repository
