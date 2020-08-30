@@ -4,7 +4,7 @@ LABEL authors="Hannes Papenberg"
 
 RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
 RUN apt-get update
-RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached-dev
+RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached-dev \
 	libwebp-dev libjpeg-dev libpq-dev libldap2-dev libmcrypt-dev libpng-dev \
 	libsqlite3-dev libssl-dev libxpm-dev mysql-client patch postgresql-client \
 	unzip wget
