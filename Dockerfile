@@ -17,6 +17,7 @@ RUN apt-get update && \
 		php5-dev \
 		php5-gd \
 		php5-ldap \
+		php5-mcrypt \
 		php5-memcached \
 		php5-mysql \
 		php5-pgsql \
