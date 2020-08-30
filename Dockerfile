@@ -18,9 +18,6 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
 RUN docker-php-ext-install bz2 exif ftp gd ldap mbstring mcrypt mysql mysqli pdo_mysql pdo_pgsql pdo_sqlite pgsql zip
 
-RUN pecl install apc \
-	&& docker-php-ext-enable apc
-
 RUN pecl install memcached-2.2.0 \
 	&& docker-php-ext-enable memcached
 
