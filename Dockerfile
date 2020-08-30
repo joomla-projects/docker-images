@@ -3,18 +3,20 @@ FROM php:5.4-apache
 LABEL authors="Hannes Papenberg"
 
 RUN apt-get update
-RUN apt-get install -y autoconf gcc git libbz2-dev libpng-dev libfreetype6-dev \
-	libmemcached-dev libwebp-dev libjpeg-dev libxpm-dev libpq-dev libldap2-dev \
-	libsqlite3-dev unzip wget patch mysql-client postgresql-client
+RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached-dev \
+	libwebp-dev libjpeg-dev libpq-dev libldap2-dev libmcrypt-dev libpng-dev \
+	libsqlite3-dev libssl-dev libxpm-dev mysql-client patch postgresql-client \
+	unzip wget
 
 RUN docker-php-ext-configure gd \
 	--with-freetype-dir=/usr/lib/ \
 	--with-png-dir=/usr/lib/ \
 	--with-jpeg-dir=/usr/lib/ \
+	--with-webp-dir=/usr/lib/ \
 	--with-gd
 
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install bz2 ftp gd exif mysqli pdo_mysql pgsql pdo_pgsql pdo_sqlite zip ldap mbstring ftp
+RUN docker-php-ext-install bz2 exif ftp gd ldap mbstring mcrypt mysql mysqli pdo_mysql pdo_pgsql pdo_sqlite pgsql zip
 
 RUN pecl install apc \
 	&& docker-php-ext-enable apc
@@ -26,7 +28,8 @@ RUN pecl install redis-4.3.0 \
 	&& docker-php-ext-enable redis
 
 RUN pecl install apcu-4.0.11 \
-	&& docker-php-ext-enable apcu
+	&& docker-php-ext-enable apcu \
+	&& echo "\napc.enable=1\napc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 
 RUN echo 'memory_limit=-1' > /usr/local/etc/php/php.ini
 
