@@ -22,6 +22,7 @@ RUN apt-get update && \
 		php5-memcached \
 		php5-mysql \
 		php5-pgsql \
+		php5-sqlite \
 		pkg-config \
 		postgresql-client \
 		make \
