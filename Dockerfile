@@ -32,12 +32,16 @@ RUN pecl install apcu \
 RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
 	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
 
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+#RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 # We would love to check the signature of the installer, but since the signature changes very frequently, we can't really commit it to the repository
 #	&& php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-	&& php composer-setup.php \
-	&& php -r "unlink('composer-setup.php');" \
-	&& mv composer.phar /usr/local/bin/composer
+#	&& php composer-setup.php \
+#	&& php -r "unlink('composer-setup.php');" \
+#	&& mv composer.phar /usr/local/bin/composer
+
+# Fallback to composer 1 untill our dependencies are fixed
+RUN php -r "readfile('https://getcomposer.org/composer-1.phar');" > /usr/local/bin/composer
+
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 RUN cd /usr/local/bin \
