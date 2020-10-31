@@ -41,6 +41,7 @@ RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-p
 
 # Fallback to composer 1 untill our dependencies are fixed
 RUN php -r "readfile('https://getcomposer.org/composer-1.phar');" > /usr/local/bin/composer
+	&& chmod +x /usr/local/bin/composer
 
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
