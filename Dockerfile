@@ -45,7 +45,9 @@ RUN git config --global http.postBuffer 524288000
 
 # Beta Version if needed
 #RUN wget https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+#RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# Fall back to old stable because current version (87.0.4280.66) fail to work with selenium (Status 2020-11-27)
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_85.0.4183.121-1_amd64.deb
 RUN dpkg -i google-chrome*.deb
 
 # Get the matching driver version for the installed google chrome
