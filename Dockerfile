@@ -62,7 +62,8 @@ RUN npm install -g selenium-standalone
 RUN sed -i '/chrome: {/!b;n;c\      version: '`cat chrome_driver_version_tmp` /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
     sed -i '/ie: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
     sed -i '/firefox: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
-    sed -i '/edge: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js
+    sed -i '/edge: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
+    sed -i '/config.drivers.chromiumedge/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js
 
 # Only install Chrome at this time
 RUN selenium-standalone install
