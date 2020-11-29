@@ -44,10 +44,10 @@ RUN composer self-update
 RUN git config --global http.postBuffer 524288000
 
 # Beta Version if needed
-#RUN wget https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
-#RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+#RUN wget -nv https://dl.google.com/linux/direct/google-chrome-beta_current_amd64.deb
+#RUN wget -nv https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 # Fall back to old stable because current version (87.0.4280.66) fail to work with selenium (Status 2020-11-27)
-RUN wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_85.0.4183.121-1_amd64.deb
+RUN wget -nv https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_85.0.4183.121-1_amd64.deb
 RUN dpkg -i google-chrome*.deb
 
 # Get the matching driver version for the installed google chrome
@@ -61,7 +61,8 @@ RUN npm install -g selenium-standalone
 # Replace default version with requried chrome version 
 RUN sed -i '/chrome: {/!b;n;c\      version: '`cat chrome_driver_version_tmp` /usr/lib/node_modules/selenium-standalone/lib/default-config.js
 
-RUN selenium-standalone install
+# Only install Chrome at this time
+RUN selenium-standalone install --singleDriverInstall=chrome
 
 # Start Apache and MySQL
 CMD apache2ctl -D FOREGROUND
