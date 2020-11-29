@@ -59,9 +59,9 @@ RUN apt-get upgrade -y
 RUN npm install -g selenium-standalone
 
 # Replace default version with required chrome version and delete unsed drivers (ie, firefox, edge)
-RUN sed -i '/chrome: {/!b;n;c\      version: '`cat chrome_driver_version_tmp` /usr/lib/node_modules/selenium-standalone/lib/default-config.js \
-    sed -i '/ie: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js \
-    sed -i '/firefox: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js \
+RUN sed -i '/chrome: {/!b;n;c\      version: '`cat chrome_driver_version_tmp` /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
+    sed -i '/ie: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
+    sed -i '/firefox: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js && \
     sed -i '/edge: {/,/}/d' /usr/lib/node_modules/selenium-standalone/lib/default-config.js
 
 # Only install Chrome at this time
