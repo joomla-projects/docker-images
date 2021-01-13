@@ -50,3 +50,9 @@ RUN cd /usr/local/bin \
 RUN cd /usr/local/bin \
 	&& wget -O phploc --no-check-certificate https://phar.phpunit.de/phploc.phar \
 	&& chmod +x phploc
+
+RUN cd /usr/local/etc/php \
+	&& cp php.ini-development php.ini
+
+RUN pecl install xdebug-3.0.2 \
+	&& echo 'zend_extension='`find /usr -name xdebug.so`'\nxdebug.mode=develop,coverage\n' > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
