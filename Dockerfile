@@ -43,3 +43,9 @@ ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 RUN cd /usr/local/bin \
 	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
 	&& chmod +x phpunit
+
+RUN cd /usr/local/etc/php \
+	&& cp php.ini-development php.ini
+
+RUN pecl install -n xdebug-3.0.2 \
+	&& echo 'zend_extension='`find /usr -name xdebug.so`'\nxdebug.mode=develop,coverage\n' > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
