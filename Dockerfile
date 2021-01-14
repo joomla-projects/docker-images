@@ -1,13 +1,13 @@
-FROM phpdaily/php:8.0.0-dev-apache-buster
+FROM php:8.0-apache
 
 LABEL authors="Hannes Papenberg"
 
 RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
 RUN apt-get update
 RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached-dev \
-	libonig-dev libwebp-dev libjpeg-dev libpq-dev libldap2-dev libmcrypt-dev \
-	libpng-dev libsodium-dev libsqlite3-dev libssl-dev libxpm-dev libzip-dev mariadb-client \
-	patch postgresql-client unzip wget
+	libwebp-dev libjpeg-dev libpq-dev libldap2-dev libmcrypt-dev libonig-dev \
+	libpng-dev libsodium-dev libsqlite3-dev libssl-dev libxpm-dev libzip-dev \
+	mariadb-client patch postgresql-client unzip wget
 
 RUN docker-php-ext-configure gd \
 	--with-freetype \
@@ -16,14 +16,13 @@ RUN docker-php-ext-configure gd \
 	--enable-gd
 
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install bz2 exif ftp gd ldap mysqli pdo_mysql pdo_pgsql pdo_sqlite pgsql sodium zip # mbstring opcache
+RUN docker-php-ext-install bz2 exif ftp gd ldap mbstring sodium mysqli opcache pdo_mysql pdo_pgsql pdo_sqlite pgsql zip
 
 RUN pecl install memcached \
 	&& docker-php-ext-enable memcached
 
-# Unfortunately redis doesn't work yet in PHP8.0
-# RUN pecl install redis \
-#	&& docker-php-ext-enable redis
+RUN pecl install redis \
+	&& docker-php-ext-enable redis
 
 RUN pecl install apcu \
 	&& docker-php-ext-enable apcu \
@@ -40,6 +39,20 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
-# We currently have issues with PHPUnit and PHP8 in our setup, so not adding this here.
-# RUN composer global require phpunit/phpunit
-ENV PATH="/root/.composer/vendor/bin:$PATH"
+RUN cd /usr/local/bin \
+	&& wget -nv -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
+	&& chmod +x phpunit
+
+RUN cd /usr/local/bin \
+	&& wget -nv -O phpcpd --no-check-certificate https://phar.phpunit.de/phpcpd.phar \
+	&& chmod +x phpcpd
+
+RUN cd /usr/local/bin \
+	&& wget -nv -O phploc --no-check-certificate https://phar.phpunit.de/phploc.phar \
+	&& chmod +x phploc
+
+RUN cd /usr/local/etc/php \
+	&& cp php.ini-development php.ini
+
+RUN pecl install xdebug-3.0.2 \
+	&& echo 'zend_extension='`find /usr -name xdebug.so`'\nxdebug.mode=develop,coverage\n' > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
