@@ -1,3 +1,3 @@
-# Docker Container with PHP 8.1-dev
+# Docker Images for Joomla CI
 
-Docker Container for unit testing with PHP 8.1-dev and our PHP Unit extensions.
+This repo contains several images for Joomla development.
