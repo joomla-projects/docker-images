@@ -40,19 +40,13 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 RUN cd /usr/local/bin \
-	&& wget -nv -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
+	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
 	&& chmod +x phpunit
 
 RUN cd /usr/local/bin \
-	&& wget -nv -O phpcpd --no-check-certificate https://phar.phpunit.de/phpcpd.phar \
+	&& wget -O phpcpd --no-check-certificate https://phar.phpunit.de/phpcpd.phar \
 	&& chmod +x phpcpd
 
 RUN cd /usr/local/bin \
-	&& wget -nv -O phploc --no-check-certificate https://phar.phpunit.de/phploc.phar \
+	&& wget -O phploc --no-check-certificate https://phar.phpunit.de/phploc.phar \
 	&& chmod +x phploc
-
-RUN cd /usr/local/etc/php \
-	&& cp php.ini-development php.ini
-
-RUN pecl install xdebug-3.0.2 \
-	&& echo 'zend_extension='`find /usr -name xdebug.so`'\nxdebug.mode=develop,coverage\n' > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
