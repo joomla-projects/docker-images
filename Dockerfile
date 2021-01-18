@@ -40,10 +40,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
+# We currently have issues with PHPUnit and PHP8 in our setup, so not adding this here.
+# RUN composer global require phpunit/phpunit
 ENV PATH="/root/.composer/vendor/bin:$PATH"
-
-RUN cd /usr/local/etc/php \
-	&& cp php.ini-development php.ini
-
- RUN pecl install -n xdebug-3.0.2 \
-	&& echo 'zend_extension='`find /usr -name xdebug.so`'\nxdebug.mode=develop,coverage\n' > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
