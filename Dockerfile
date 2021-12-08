@@ -1,4 +1,4 @@
-FROM phpdaily/php:8.1.0-dev-apache-buster
+FROM php:8.1-apache
 
 LABEL authors="Hannes Papenberg"
 
