@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM phpdaily/php:8.2-apache-buster
 
 LABEL authors="Hannes Papenberg, Harald Leithner"
 
