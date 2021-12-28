@@ -42,5 +42,5 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 RUN cd /usr/local/bin \
-	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.5.8.phar \
+	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-8.phar \
 	&& chmod +x phpunit
