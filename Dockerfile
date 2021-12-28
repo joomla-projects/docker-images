@@ -36,8 +36,7 @@ RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-p
 	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-# We would love to check the signature of the installer, but since the signature changes very frequently, we can't really commit it to the repository
-#	&& php -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSERSIG') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+	&& php -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSERSIG') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
 	&& php composer-setup.php \
 	&& php -r "unlink('composer-setup.php');" \
 	&& mv composer.phar /usr/local/bin/composer
