@@ -13,7 +13,7 @@ RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y mariadb-server mariadb-c
     curl wget firefox unzip git fluxbox libxss1 libappindicator3-1 libindicator7 openjdk-8-jre xvfb \
     gconf-service fonts-liberation dbus xdg-utils libasound2 libpython2.7 \
     libaudio2 libgbm1 fontconfig netcat \
-    lsb-release ca-certificates apt-transport-https software-properties-common
+    lsb-release ca-certificates apt-transport-https software-properties-common rsync
 
 RUN add-apt-repository ppa:ondrej/php
 
