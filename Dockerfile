@@ -1,41 +1,25 @@
-FROM alpine:edge
+FROM php:7.4-cli-bullseye
 
 LABEL authors="Harald Leithner"
 
-RUN apk --no-cache add \
-        libressl \
-        lftp \
-        bash \
-        diffutils \
-        git \
-        openssh-client \
-        zip \
-        zstd \
-        tar \
-        php \
-        php-curl \
-        php-openssl \
-        php-json \
-        php-phar \
-        php-zip \
-        php-xml \
-        php-dom \
-        php-iconv \
-        php-gd \
-        php-ldap \
-        php-ctype \
-        php-mbstring \
-        php-tokenizer \
-        php-xmlwriter \
-        php-simplexml \
-        wget \
-        curl \
-        npm
+# Build process supplies the current composer-setup.php signature
+ARG COMPOSERSIG
 
-ADD composer_install.sh /bin
+RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
+RUN apt-get update
+RUN apt-get install -y git unzip zstd zip npm tar diffutils lftp wget
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSERSIG') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php composer-setup.php \
+    && php -r "unlink('composer-setup.php');" \
+    && mv composer.phar /usr/local/bin/composer
+ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
+
 ADD drone_build.sh /bin
 
 ADD templates /build_templates
 
-RUN chmod +x /bin/composer_install.sh /bin/drone_build.sh
-RUN /bin/composer_install.sh
+RUN php -v
+
+RUN chmod +x /bin/drone_build.sh
