@@ -24,7 +24,8 @@ echo "=> Configure git"
 /usr/bin/git config --global credential.https://github.com.username git
 
 if [[ -d .git ]]; then
-  /usr/bin/git checkout "${GIT_BRANCH_NAME}" .
+  /usr/bin/git checkout ${GIT_BRANCH_NAME}
+  /usr/bin/git fetch origin
   /usr/bin/git pull
   /usr/bin/git fetch origin
   /usr/bin/git rebase origin/main
