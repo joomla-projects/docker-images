@@ -16,7 +16,7 @@ if [[ $TUF_PARAMS = "bash" ]]; then
         -e GIT_BRANCH_NAME="${GIT_BRANCH_NAME}" \
         -e GIT_USER_NAME="${GIT_USER_NAME}" \
         -e GIT_USER_EMAIL="${GIT_USER_EMAIL}" \
-        -v "$(pwd)/updates:/go/updates" joomla-tuf:latest
+        -v "$(pwd)/updates:/go" joomla-tuf:latest
 elif [[ $TUF_PARAMS = "add" ]]; then
     echo "=> Add update files ans sign them"
     read -rep "Please enter the Update Name: " -i "Joomla!-${GIT_BRANCH_NAME}" UPDATE_NAME
@@ -35,12 +35,12 @@ elif [[ $TUF_PARAMS = "add" ]]; then
         -e UPDATE_INFO_URL="${UPDATE_INFO_URL}"\
         -e UPDATE_INFO_TITLE="${UPDATE_INFO_TITLE}"\
         -e DEBUG=True \
-        -v "$(pwd)/updates:/go/updates" joomla-tuf:latest
+        -v "$(pwd)/updates:/go" joomla-tuf:latest
 else
     docker run -e ACCESS_TOKEN="${ACCESS_TOKEN}"\
         -e GIT_BRANCH_NAME="${GIT_BRANCH_NAME}"\
         -e GIT_USER_NAME="${GIT_USER_NAME}"\
         -e GIT_USER_EMAIL="${GIT_USER_EMAIL}"\
         -e DEBUG=True \
-        -v "$(pwd)/updates:/go/updates" joomla-tuf:latest "${TUF_PARAMS}"
+        -v "$(pwd)/updates:/go" joomla-tuf:latest "${TUF_PARAMS}"
 fi
