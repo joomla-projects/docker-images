@@ -27,13 +27,13 @@ if [[ -d updates/.git ]]; then
   cd updates; \
   git checkout "${GIT_BRANCH_NAME}"; \
   git pull; \
-  git fetch origin/main || true; \
+  git fetch origin || true; \
   git rebase main || true
 else
   /usr/bin/gh repo clone "${GIT_URL}"
   cd updates; \
   git checkout "${GIT_BRANCH_NAME}"; \
-  git fetch origin/main || true; \
+  git fetch origin || true; \
   git rebase main || true
 fi
 
