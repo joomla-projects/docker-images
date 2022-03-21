@@ -26,6 +26,7 @@ echo "=> Configure git"
 if [[ -d .git ]]; then
   /usr/bin/git checkout ${GIT_BRANCH_NAME}
   /usr/bin/git fetch origin
+  /usr/bin/git branch --set-upstream-to=origin/${GIT_BRANCH_NAME} ${GIT_BRANCH_NAME}
   /usr/bin/git pull
   /usr/bin/git fetch origin
   /usr/bin/git rebase origin/main
