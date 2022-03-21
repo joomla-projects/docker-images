@@ -20,7 +20,7 @@ ENV GOPATH=/tuf
 RUN echo "=> Install go-tuf" && \
     mkdir /tuf && \
     cd /tuf && \
-    go install github.com/theupdateframework/go-tuf/cmd/tuf@$TUF_VERSION && ls -l
+    go install github.com/theupdateframework/go-tuf/cmd/tuf@$TUF_VERSION
 
 COPY docker-entrypoint.sh /tuf/docker-entrypoint.sh
 COPY git_env_password.sh /tuf/git_env_password.sh

@@ -3,6 +3,7 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
+basedir=`pwd`
 
 if [[ -n ${DEBUG:-} ]]; then
   echo "=> DEBUG is enabled"
@@ -20,6 +21,7 @@ echo "=> Setup Github CLI"
 echo "=> Configure git"
 /usr/bin/git config --global user.name "${GIT_USER_NAME}"
 /usr/bin/git config --global user.email "${GIT_USER_EMAIL}"
+/usr/bin/git config --global init.defaultBranch main
 /usr/bin/git config --global pull.rebase false;
 /usr/bin/git config --global credential.https://github.com.username git
 
@@ -54,7 +56,7 @@ elif [[ $1 == "release" ]]; then
   PR_URL=$(/usr/bin/gh pr create --base main --title "Release: ${GIT_BRANCH_NAME}")
   /usr/bin/gh pr merge "${PR_URL}"
 elif [[ $1 == "gen-template" ]]; then
-  sed "s/\$VERSION/${UPDATE_VERSION}/g" /go/templates/update-info-4.json | tee /tmp/update-info.json
+  sed "s/\$VERSION/${UPDATE_VERSION}/g" $basedir/templates/update-info-4.json | tee /tmp/update-info.json
   cat <<< $(jq '.["description"] = "'"${UPDATE_DESCRIPTION}"'"' /tmp/update-info.json) > /tmp/update-info.json
   cat <<< $(jq '.["infourl"]["url"] = "'"${UPDATE_INFO_URL}"'"' /tmp/update-info.json) > /tmp/update-info.json
   cat <<< $(jq '.["infourl"]["title"] = "'"${UPDATE_INFO_TITLE}"'"' /tmp/update-info.json) > /tmp/update-info.json
