@@ -55,7 +55,7 @@ elif [[ $1 == "release" ]]; then
   /usr/bin/git push
   PR_URL=$(/usr/bin/gh pr create --base main --title "Release: ${GIT_BRANCH_NAME}")
   /usr/bin/gh pr merge "${PR_URL}"
-elif [[ $1 == "gen-template" ]]; then
+elif [[ $1 == "prepare-release" ]]; then
   sed "s/\$VERSION/${UPDATE_VERSION}/g" $basedir/templates/update-info-4.json | tee /tmp/update-info.json
   cat <<< $(jq '.["description"] = "'"${UPDATE_DESCRIPTION}"'"' /tmp/update-info.json) > /tmp/update-info.json
   cat <<< $(jq '.["infourl"]["url"] = "'"${UPDATE_INFO_URL}"'"' /tmp/update-info.json) > /tmp/update-info.json
