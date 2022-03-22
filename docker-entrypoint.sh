@@ -66,6 +66,11 @@ elif [[ $1 == "prepare-release" ]]; then
   /usr/bin/git add .
   /usr/bin/git commit -m "Prepare ${UPDATE_VERSION}"
   /usr/bin/git push
+elif [[ $1 == "sign-release" ]]; then
+  /tuf/bin/tuf sign targets.json
+  git add .
+  git commit -m "Sign Release ${GIT_BRANCH_NAME}"
+  git push
 else
   /tuf/bin/tuf "$1"
 fi
