@@ -1,2 +1,4 @@
 updates/
 .env
+.vscode/
+*.code-workspace
