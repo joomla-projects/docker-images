@@ -1,4 +1,4 @@
-FROM golang:1.17-bullseye
+FROM golang:1.17-bullseye@sha256:8c9f292e2356680dadcbc05e53ca8a166ff1db39aadbab6bcd3e68e4042bd9eb
 
 ENV TUF_VERSION=v0.1.0
 ENV GIT_URL=https://github.com/joomla/updates.git
