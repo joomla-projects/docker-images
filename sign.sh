@@ -6,7 +6,7 @@ echo "=> Asking for needed User inputs"
 read -rp "Branch to use for signage: " GIT_BRANCH_NAME
 read -srp "Github Personall Access Token: " ACCESS_TOKEN
 echo ""
-read -rp "Paramters to be passed to TUF: " TUF_PARAMS
+read -rp "Parameter to be passed to TUF: " TUF_PARAMS
 
 echo "=> Run signing process"
 
