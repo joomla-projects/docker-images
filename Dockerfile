@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached-dev \
 	libwebp-dev libjpeg-dev libpq-dev libldap2-dev libmcrypt-dev libonig-dev \
 	libpng-dev libsodium-dev libsqlite3-dev libssl-dev libxpm-dev libzip-dev \
-	mariadb-client patch postgresql-client unzip wget
+	mariadb-client patch postgresql-client unzip wget libicu-dev
 
 RUN docker-php-ext-configure gd \
 	--with-freetype \
