@@ -14,12 +14,15 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && php -r "unlink('composer-setup.php');" \
     && mv composer.phar /usr/local/bin/composer
+
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
 ADD drone_build.sh /bin
+ADD notify /bin
 
 ADD templates /build_templates
 
 RUN php -v
 
 RUN chmod +x /bin/drone_build.sh
+RUN chmod +x /bin/notify

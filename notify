@@ -1,0 +1,147 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Script to send notifications to RingCentral
+ */
+
+if (!getenv('CI') || !getenv('DRONE'))
+{
+	echo 'Unknown evironment. Exiting...';
+	exit(1);
+}
+
+$event = getenv('DRONE_BUILD_EVENT');
+
+if (!in_array($event, ['push', 'pull_request', 'promote', 'rollback', 'tag', 'cron', 'custom']))
+{
+	echo 'Unknown event. Exiting...';
+	exit(1);
+}
+
+$message = new stdClass();
+$message->activity = getenv('PULL_REQUEST_TITLE ');
+$message->type = 'message';
+$text = $event();
+$message->text = $text;
+$card = new stdClass();
+$card->{'$schema'} = "http://adaptivecards.io/schemas/adaptive-card.json";
+$card->type = "AdaptiveCard";
+$card->body = [
+	(object) [
+		'type' => 'TextBlock',
+		'text' => $text,
+		'wrap' => true
+	]
+];
+$card->actions = [];
+$card->actions[] = (object) [
+	'type' => 'Action.OpenUrl',
+	'url' => getenv('DRONE_BUILD_LINK'),
+	'title' => 'Build on ci.joomla.org'
+];
+
+if (!in_array($event, ['cron', 'custom']))
+{
+	$card->actions[] = (object) [
+		'type' => 'Action.OpenUrl',
+		'url' => getenv('DRONE_COMMIT_LINK'),
+		'title' => 'Pull Request'
+	];
+}
+
+$message->attachments = [$card];
+
+$url = getenv('RINGCENTRAL_WEBHOOK');
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type:application/json']);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($message));
+curl_exec($ch);
+curl_close($ch);
+
+function push()
+{
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return getenv('DRONE_COMMIT_AUTHOR') . ' pushed a new commit to "' . getenv('DRONE_COMMIT_MESSAGE') . '" in ' . getenv('DRONE_REPO');
+	}
+	else
+	{
+		return 'The latest push from ' . getenv('DRONE_COMMIT_AUTHOR') . ' to "' . getenv('DRONE_COMMIT_MESSAGE') . '" in ' . getenv('DRONE_REPO') . ' FAILED!!';
+	}
+}
+
+function pull_request()
+{
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return 'A new PR "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' was opened.';
+	}
+	else
+	{
+		return 'Building the PR "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' FAILED!!';
+	}
+}
+
+function promote()
+{
+	return 'not implemented...';
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return '';
+	}
+	else
+	{
+		return '';
+	}
+}
+
+function rollback()
+{
+	return 'not implemented...';
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return '';
+	}
+	else
+	{
+		return '';
+	}
+}
+
+function tag()
+{
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return 'A new tag "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' was created.';
+	}
+	else
+	{
+		return 'The built for a new tag "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' has failed.';
+	}
+}
+
+function cron()
+{
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return 'A new cron build in ' . getenv('DRONE_REPO') . ' was run.';
+	}
+	else
+	{
+		return 'A new cron build in ' . getenv('DRONE_REPO') . ' has failed.';
+	}
+}
+
+function custom()
+{
+	if (getenv('DRONE_BUILD_STATUS') == 'success')
+	{
+		return 'A new custom build in ' . getenv('DRONE_REPO') . ' was run.';
+	}
+	else
+	{
+		return 'A new custom build in ' . getenv('DRONE_REPO') . ' has failed.';
+	}
+}
