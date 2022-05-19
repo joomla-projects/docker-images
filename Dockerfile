@@ -6,6 +6,7 @@ LABEL authors="Harald Leithner"
 ARG COMPOSERSIG
 
 RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update
 RUN apt-get install -y git unzip zstd zip npm tar diffutils lftp wget rclone
 
