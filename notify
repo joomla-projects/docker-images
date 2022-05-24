@@ -19,13 +19,14 @@ if (!in_array($event, ['push', 'pull_request', 'promote', 'rollback', 'tag', 'cr
 }
 
 $message = new stdClass();
-$message->activity = getenv('PULL_REQUEST_TITLE ');
+$message->activity = getenv('DRONE_COMMIT_MESSAGE ');
 $message->title = getenv('DRONE_COMMIT_MESSAGE');
 $text = $event();
 //$message->text = $text;
 $card = new stdClass();
 $card->{'$schema'} = "http://adaptivecards.io/schemas/adaptive-card.json";
 $card->type = "AdaptiveCard";
+$card->version = '1.3';
 $card->body = [
 	(object) [
 		'type' => 'TextBlock',
@@ -52,6 +53,8 @@ if (!in_array($event, ['cron', 'custom']))
 $message->attachments = [$card];
 
 $url = getenv('RINGCENTRAL_WEBHOOK');
+
+echo json_encode($message);
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
