@@ -19,7 +19,7 @@ if (!in_array($event, ['push', 'pull_request', 'promote', 'rollback', 'tag', 'cr
 }
 
 $message = new stdClass();
-$message->activity = getenv('DRONE_COMMIT_MESSAGE ');
+$message->activity = 'Notification';//getenv('DRONE_COMMIT_MESSAGE');
 $message->title = getenv('DRONE_COMMIT_MESSAGE');
 $text = $event();
 //$message->text = $text;
@@ -67,11 +67,11 @@ function push()
 {
 	if (getenv('DRONE_BUILD_STATUS') == 'success')
 	{
-		return getenv('DRONE_COMMIT_AUTHOR') . ' pushed a new commit to "' . getenv('DRONE_COMMIT_MESSAGE') . '" in ' . getenv('DRONE_REPO');
+		return getenv('DRONE_COMMIT_AUTHOR') . ' pushed a new commit to "' . getenv('DRONE_COMMIT_MESSAGE') . '" in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH');
 	}
 	else
 	{
-		return 'The latest push from ' . getenv('DRONE_COMMIT_AUTHOR') . ' to "' . getenv('DRONE_COMMIT_MESSAGE') . '" in ' . getenv('DRONE_REPO') . ' FAILED!!';
+		return 'The latest push from ' . getenv('DRONE_COMMIT_AUTHOR') . ' to "' . getenv('DRONE_COMMIT_MESSAGE') . '" in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' FAILED!!';
 	}
 }
 
@@ -79,11 +79,11 @@ function pull_request()
 {
 	if (getenv('DRONE_BUILD_STATUS') == 'success')
 	{
-		return 'A new PR "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' was opened.';
+		return 'A new PR "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' was opened.';
 	}
 	else
 	{
-		return 'Building the PR "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' FAILED!!';
+		return 'Building the PR "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' FAILED!!';
 	}
 }
 
@@ -117,11 +117,11 @@ function tag()
 {
 	if (getenv('DRONE_BUILD_STATUS') == 'success')
 	{
-		return 'A new tag "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' was created.';
+		return 'A new tag "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' was created.';
 	}
 	else
 	{
-		return 'The built for a new tag "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ' has failed.';
+		return 'The built for a new tag "' . getenv('DRONE_COMMIT_MESSAGE') . '" from ' . getenv('DRONE_COMMIT_AUTHOR') . ' in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' has failed.';
 	}
 }
 
@@ -129,11 +129,11 @@ function cron()
 {
 	if (getenv('DRONE_BUILD_STATUS') == 'success')
 	{
-		return 'A new cron build in ' . getenv('DRONE_REPO') . ' was run SUCCESSFULLY.';
+		return 'A new cron build in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' was run SUCCESSFULLY.';
 	}
 	else
 	{
-		return 'A new cron build in ' . getenv('DRONE_REPO') . ' has FAILED.';
+		return 'A new cron build in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' has FAILED.';
 	}
 }
 
@@ -141,10 +141,10 @@ function custom()
 {
 	if (getenv('DRONE_BUILD_STATUS') == 'success')
 	{
-		return 'A new custom build in ' . getenv('DRONE_REPO') . ' was run SUCCESSFULLY.';
+		return 'A new custom build in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' was run SUCCESSFULLY.';
 	}
 	else
 	{
-		return 'A new custom build in ' . getenv('DRONE_REPO') . ' has FAILED.';
+		return 'A new custom build in ' . getenv('DRONE_REPO') . ':' . getenv('DRONE_COMMIT_BRANCH') . ' has FAILED.';
 	}
 }
