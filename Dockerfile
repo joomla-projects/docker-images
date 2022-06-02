@@ -5,6 +5,10 @@ LABEL org.opencontainers.image.authors="Yves Hoppe <yves@compojoom.com>, Robert 
 # Set correct environment variables.
 ENV HOME /root
 
+# Add sury php repository
+RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ `. /etc/os-release ; echo $VERSION_CODENAME` main" > /etc/apt/sources.list.d/php.list
+
 # update the package sources
 RUN apt-get update
 
