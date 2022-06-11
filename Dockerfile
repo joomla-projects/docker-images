@@ -1,8 +1,8 @@
-FROM golang:1.17-bullseye@sha256:8c9f292e2356680dadcbc05e53ca8a166ff1db39aadbab6bcd3e68e4042bd9eb
+FROM golang:1.18-bullseye@sha256:5417b4917fa7ed3ad2678a3ce6378a00c95bfd430c2ffa39936fce55130b5f2c
 
-ENV TUF_VERSION=v0.1.0
+ENV TUF_VERSION=ae904d2bb977a54e6a5527513c4d398c8d9cc285
 ENV GIT_URL=https://github.com/joomla/updates.git
-ENV GITHUB_CLI_VERSION=2.6.0
+ENV GITHUB_CLI_VERSION=2.12.1
 ENV GIT_ASKPASS=/tuf/git_env_password.sh
 
 RUN echo "=> Running apt-get update" && \
@@ -16,6 +16,7 @@ RUN echo "=> Running apt-get update" && \
     rm -rf /var/cache/apt /var/lib/apt/lists github-cli.deb
 
 ENV GOPATH=/tuf
+ENV PATH="/tuf/bin:${PATH}"
 
 RUN echo "=> Install go-tuf" && \
     mkdir /tuf && \
