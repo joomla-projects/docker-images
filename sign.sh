@@ -52,17 +52,31 @@ localread "Github Personnel Access Token:" "" ACCESS_TOKEN s
 if [ -z "${ACCESS_TOKEN}" ]; then echo "Aboarting no Personnel Access Token given."; exit 1; fi
 
 echo ""
-echo "Supported actions:"
-echo " * prepare-release"
-echo " * sign-release"
-echo " * release"
-echo " * create-signature"
-echo " * sign-signature"
-echo " * commit-signature"
-echo " * update-timestamp"
-echo " * bash"
+echo "Supported actions"
+echo ""
+echo "Release Actions:"
+echo " 1 prepare-release"
+echo " 2 sign-release"
+echo " 3 release"
+echo ""
+echo "Signature Actions:"
+echo " 4 create-signature"
+echo " 5 sign-signature"
+echo " 6 commit-signature"
+echo ""
+echo "Maintenance Actions:"
+echo " 7 update-timestamp"
+echo " 8 bash"
 echo ""
 localread "Action to be passed to TUF:" "" TUF_PARAMS
+
+declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-signature [5]=sign-signature [6]=commit-signature [7]=update-timestamp [8]=bash )
+
+for key in "${!TUF_ACTIONS[@]}"; do
+  if [ "x$key" == "x$TUF_PARAMS" ]; then
+    TUF_PARAMS=${TUF_ACTIONS[$key]};
+  fi
+done
 
 # Prepare standard environment parameters for the docker iamge
 DOCKER_ENV_FILE=`mktemp`
