@@ -81,8 +81,8 @@ case "$1" in
       ;;
   "sign-release")
       $TUF sign targets.json
-      git add .
-      git commit -m "Sign Release ${GIT_TARGET_BRANCH_NAME}"
+      $GIT add .
+      $GIT commit -m "Sign Release ${GIT_TARGET_BRANCH_NAME}"
       $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
       ;;
   "release")
@@ -92,8 +92,8 @@ case "$1" in
       $GIT add .
       $GIT commit -m "Release: ${GIT_TARGET_BRANCH_NAME}"
       $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
-      PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "Release: ${GIT_TARGET_BRANCH_NAME}")
-      $GH pr merge "${PR_URL}"
+      PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "Release: ${GIT_TARGET_BRANCH_NAME}"  --body "Release: ${GIT_TARGET_BRANCH_NAME}")
+      $GH pr merge --merge "${PR_URL}"
       ;;
   "create-signature")
       tmpfile=`mktemp`
