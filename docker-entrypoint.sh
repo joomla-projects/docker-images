@@ -53,8 +53,10 @@ if [ "`$GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} > /dev/null || echo $?`
   $GIT pull
 fi
 
-$GIT fetch origin
-$GIT rebase origin/${GIT_BASE_BRANCH_NAME}
+if [ -z "$($GIT status --porcelain)" ]; then
+  $GIT fetch origin
+  $GIT rebase origin/${GIT_BASE_BRANCH_NAME}
+fi
 
 case "$1" in
   "bash")
@@ -102,6 +104,17 @@ case "$1" in
 
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json
+
+      jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
+      mv $tmpfile metadata/keys.json
+
+      if [ "${SIGNATURE_ROLE}" == "targets" ]; then
+        jq ".signed.roles.snapshot.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
+        mv $tmpfile staged/root.json
+
+        jq ".signed.roles.timestamp.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
+        mv $tmpfile staged/root.json
+      fi
 
       $TUF payload root.json > staged/root.json.payload
       $GIT add .
