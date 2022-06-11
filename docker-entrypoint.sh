@@ -103,7 +103,7 @@ case "$1" in
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json
 
-      $TUF payload ${SIGNATURE_ROLE}.json > staged/${SIGNATURE_ROLE}.json.payload
+      $TUF payload root.json > staged/root.json.payload
       $GIT add .
       $GIT commit -m "Prepare key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"
       $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
@@ -111,7 +111,7 @@ case "$1" in
   "sign-signature")
       $TUF sign-payload --role=${SIGNATURE_ROLE} staged/${SIGNATURE_ROLE}.json.payload > staged/${SIGNATURE_ROLE}.json.sigs.$RANDOM
       $GIT add .
-      $GIT commit -m "Signed key for Role ${SIGNATURE_ROLE}"
+      $GIT commit -m "Signed signature key"
       $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
       ;;
   "commit-signature")
@@ -122,9 +122,9 @@ case "$1" in
       $TUF timestamp
       $TUF commit
       $GIT add .
-      $GIT commit -m "Add key for Role ${SIGNATURE_ROLE}"
-      $GIT push --force -u origin ${GIT_TARGET_BRANCH_NAME}
-      PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "Add key for role ${SIGNATURE_ROLE}" --body "Add key for role ${SIGNATURE_ROLE}")
+      $GIT commit -m "Add signature key"
+      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
+      PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "Add signature key" --body "Add signature key")
       $GH pr merge --merge "${PR_URL}"
       ;;
   *)

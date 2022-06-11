@@ -102,9 +102,11 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "create-signature" || $TUF_PARAMS = "sign-signature" || $TUF_PARAMS = "commit-signature" ]]; then
     echo "=> Create a signature"
-    localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
     if [[ $TUF_PARAMS = "create-signature" ]]; then
+      localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
       localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
+    else
+      SIGNATURE_ROLE="root"
     fi
     docker run \
         --env-file $DOCKER_ENV_FILE \
