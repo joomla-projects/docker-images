@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DOCKER_IMAGE="joomlaprojects/docker-images:updater"
-DOCKER_IMAGE="joomla-tuf:latest"
 
 GIT_BASE_BRANCH_NAME=main
 GIT_TARGET_BRANCH_NAME=next
