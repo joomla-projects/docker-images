@@ -7,15 +7,6 @@ basedir=`pwd`
 
 . /tuf/functions.inc.sh
 
-if [[ -n ${DEBUG:-} ]]; then
-  echo "=> DEBUG is enabled"
-  echo "=> Your passed args are: $1"
-  echo "=> TUF_VERSION: ${TUF_VERSION}"
-  echo "=> ACCESS_TOKEN: ${ACCESS_TOKEN}"
-  echo "=> GIT_URL: ${GIT_URL}"
-  set -o xtrace
-fi
-
 echo "=> Setup Github CLI"
 L_github_login
 
@@ -59,7 +50,6 @@ case "$1" in
       ;;
   "release")
       $TUF snapshot
-      $TUF timestamp
       $TUF commit
       L_git_add_and_commit "Release: ${GIT_TARGET_BRANCH_NAME}"
       L_github_create_and_merge_pr "Release: ${GIT_TARGET_BRANCH_NAME}"
@@ -75,7 +65,7 @@ case "$1" in
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json
 
-      if [ "${SIGNATURE_ROLE}" == "targets" ]; then
+      if [ "${SIGNATURE_ROLE}" == "root" || "${SIGNATURE_ROLE}" == "targets"  ]; then
         jq ".signed.roles.snapshot.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
         mv $tmpfile staged/root.json
       fi
@@ -92,7 +82,6 @@ case "$1" in
       $TUF add-signatures --signatures staged/${SIGNATURE_ROLE}.json.sigs ${SIGNATURE_ROLE}.json
       rm staged/${SIGNATURE_ROLE}.json.*
       $TUF snapshot
-      $TUF timestamp
       $TUF commit
       L_git_add_and_commit "Add signature key"
       L_github_create_and_merge_pr "Add signature key"
