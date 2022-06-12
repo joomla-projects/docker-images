@@ -4,9 +4,8 @@ set -o pipefail
 set -o errexit
 
 basedir=`pwd`
-TUF="/tuf/bin/tuf --insecure-plaintext"
-GIT="/usr/bin/git"
-GH="/usr/bin/gh"
+
+. /tuf/functions.inc.sh
 
 if [[ -n ${DEBUG:-} ]]; then
   echo "=> DEBUG is enabled"
@@ -18,45 +17,21 @@ if [[ -n ${DEBUG:-} ]]; then
 fi
 
 echo "=> Setup Github CLI"
-/usr/bin/gh auth login --with-token <<< "${ACCESS_TOKEN}"
+L_github_login
 
 echo "=> Configure git"
-$GIT config --global user.name "${GIT_USER_NAME}"
-$GIT config --global user.email "${GIT_USER_EMAIL}"
-$GIT config --global init.defaultBranch "${GIT_BASE_BRANCH_NAME}"
-$GIT config --global pull.rebase false;
-$GIT config --global credential.https://github.com.username git
+L_git_configure
 
 # If we already are in a directory with a git repository we assume it's the
 # update repository and fetch the latest commit. If we are not in a git
 # repository we create a new one and pull the upstream repository
 if [[ ! -d .git ]]; then
   echo "=> Initially checkout repository"
-  $GIT init
-  $GIT remote add origin "${GIT_URL}"
-  $GIT fetch origin
-  $GIT checkout "${GIT_BASE_BRANCH_NAME}"
-
+  L_git_init
 fi
 
 echo "=> Update repository version"
-$GIT fetch origin
-
-if [ "`$GIT show-branch ${GIT_TARGET_BRANCH_NAME} > /dev/null || echo $?`" == "" ]; then
-  $GIT checkout ${GIT_TARGET_BRANCH_NAME}
-else
-  $GIT checkout -b ${GIT_TARGET_BRANCH_NAME}
-fi
-
-if [ "`$GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} > /dev/null || echo $?`" == "" ]; then
-  $GIT branch --set-upstream-to=origin/${GIT_TARGET_BRANCH_NAME} ${GIT_TARGET_BRANCH_NAME}
-  $GIT pull
-fi
-
-if [ -z "$($GIT status --porcelain)" ]; then
-  $GIT fetch origin
-  $GIT rebase origin/${GIT_BASE_BRANCH_NAME}
-fi
+L_git_update
 
 case "$1" in
   "bash")
@@ -66,8 +41,7 @@ case "$1" in
       echo "=> TUF Updation timestamp"
       $TUF timestamp
       $TUF commit
-      $GIT commit -am "Update timestamp"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
+      L_git_add_and_commit "Update timestamp"
       ;;
   "prepare-release")
       sed "s/\$VERSION/${UPDATE_VERSION}/g" $basedir/templates/update-info-4.json | tee /tmp/update-info.json
@@ -77,25 +51,18 @@ case "$1" in
       cat <<< $(jq '.["name"] = "'"${UPDATE_NAME}"'"' /tmp/update-info.json) > /tmp/update-info.json
       cat <<< $(jq '.["version"] = "'"${UPDATE_VERSION}"'"' /tmp/update-info.json) > /tmp/update-info.json
       $TUF add --custom="$(jq -c '.' /tmp/update-info.json)"
-      $GIT add .
-      $GIT commit -m "Prepare ${UPDATE_VERSION}"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
+      L_git_add_and_commit "Prepare ${UPDATE_VERSION}"
       ;;
   "sign-release")
       $TUF sign targets.json
-      $GIT add .
-      $GIT commit -m "Sign Release ${GIT_TARGET_BRANCH_NAME}"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
+      L_git_add_and_commit "Sign Release ${GIT_TARGET_BRANCH_NAME}"
       ;;
   "release")
       $TUF snapshot
       $TUF timestamp
       $TUF commit
-      $GIT add .
-      $GIT commit -m "Release: ${GIT_TARGET_BRANCH_NAME}"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
-      PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "Release: ${GIT_TARGET_BRANCH_NAME}"  --body "Release: ${GIT_TARGET_BRANCH_NAME}")
-      $GH pr merge --merge "${PR_URL}"
+      L_git_add_and_commit "Release: ${GIT_TARGET_BRANCH_NAME}"
+      L_github_create_and_merge_pr "Release: ${GIT_TARGET_BRANCH_NAME}"
       ;;
   "create-signature")
       tmpfile=`mktemp`
@@ -114,15 +81,11 @@ case "$1" in
       fi
 
       $TUF payload root.json > staged/root.json.payload
-      $GIT add .
-      $GIT commit -m "Prepare key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
+      L_git_add_and_commit "Prepare key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"
       ;;
   "sign-signature")
       $TUF sign-payload --role=${SIGNATURE_ROLE} staged/${SIGNATURE_ROLE}.json.payload > staged/${SIGNATURE_ROLE}.json.sigs.$RANDOM
-      $GIT add .
-      $GIT commit -m "Signed signature key"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
+      L_git_add_and_commit "Signed signature key"
       ;;
   "commit-signature")
       jq -s add staged/${SIGNATURE_ROLE}.json.sigs.* > staged/${SIGNATURE_ROLE}.json.sigs
@@ -131,11 +94,8 @@ case "$1" in
       $TUF snapshot
       $TUF timestamp
       $TUF commit
-      $GIT add .
-      $GIT commit -m "Add signature key"
-      $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
-      PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "Add signature key" --body "Add signature key")
-      $GH pr merge --merge "${PR_URL}"
+      L_git_add_and_commit "Add signature key"
+      L_github_create_and_merge_pr "Add signature key"
       ;;
   *)
       $TUF "$1"

@@ -46,10 +46,10 @@ fi
 
 echo "=> Asking for needed User inputs"
 localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
-if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aboarting no branch name given."; exit 1; fi
+if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
 
 localread "Github Personnel Access Token:" "" ACCESS_TOKEN s
-if [ -z "${ACCESS_TOKEN}" ]; then echo "Aboarting no Personnel Access Token given."; exit 1; fi
+if [ -z "${ACCESS_TOKEN}" ]; then echo "Aborting no Personnel Access Token given."; exit 1; fi
 
 echo ""
 echo "Supported actions"
@@ -90,6 +90,7 @@ echo "TUF_TARGETS_PASSPHRASE=${TUF_TARGETS_PASSPHRASE}" >> $DOCKER_ENV_FILE
 echo "TUF_TIMESTAMP_PASSPHRASE=${TUF_TIMESTAMP_PASSPHRASE}" >> $DOCKER_ENV_FILE
 echo "TUF_SNAPSHOT_PASSPHRASE=${TUF_SNAPSHOT_PASSPHRASE}" >> $DOCKER_ENV_FILE
 echo "TUF_ROOT_PASSPHRASE=${TUF_ROOT_PASSPHRASE}" >> $DOCKER_ENV_FILE
+echo "TUF_PARAMETERS=${TUF_PARAMETERS}" >> $DOCKER_ENV_FILE
 
 echo "=> Run TUF process"
 

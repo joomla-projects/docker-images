@@ -24,6 +24,7 @@ RUN echo "=> Install go-tuf" && \
     go install github.com/theupdateframework/go-tuf/cmd/tuf@$TUF_VERSION
 
 COPY docker-entrypoint.sh /tuf/docker-entrypoint.sh
+COPY functions.inc.sh /tuf/functions.inc.sh
 COPY git_env_password.sh /tuf/git_env_password.sh
 RUN chmod +x /tuf/docker-entrypoint.sh
 
