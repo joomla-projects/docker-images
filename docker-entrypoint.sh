@@ -111,9 +111,6 @@ case "$1" in
       if [ "${SIGNATURE_ROLE}" == "targets" ]; then
         jq ".signed.roles.snapshot.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
         mv $tmpfile staged/root.json
-
-        jq ".signed.roles.timestamp.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
-        mv $tmpfile staged/root.json
       fi
 
       $TUF payload root.json > staged/root.json.payload
