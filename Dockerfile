@@ -17,6 +17,12 @@ RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y apache2 \
     php7.2  php7.2-cli php7.2-curl php7.2-gd php7.2-mysql php7.2-zip php7.2-xml php7.2-ldap php7.2-mbstring libapache2-mod-php7.2 php7.2-pgsql \
     curl wget unzip git netcat rsync
 
+# Remove unneded library which leads to an error in cypress
+# Error:
+# [3957:0612/201109.017400:ERROR:sandbox_linux.cc(377)] InitializeSandbox() called with multiple threads in process gpu-process.
+# [3957:0612/201109.030332:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+RUN DEBIAN_FRONTEND='noninteractive' apt autoremove -y libav-x11-2
+
 # package install is finished, clean up
 RUN apt-get clean # && rm -rf /var/lib/apt/lists/*
 
