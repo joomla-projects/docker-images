@@ -206,10 +206,7 @@ EOF
 # Clean up
 rm -rf ./upload
 
-curl -X POST "https://api.github.com/repos/$DRONE_REPO/statuses/$DRONE_COMMIT" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -d "{\"state\": \"success\", \"context\": \"Download\", \"description\": \"Prebuilt packages are available for download.\", \"target_url\": \"$DOWNLOADURL\"}" > /dev/null
+/bin/add_github_status.sh "Download" "Prebuilt packages are available for download." "$DOWNLOADURL"
 
 # Finish
 
