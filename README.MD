@@ -14,7 +14,7 @@ https://hub.docker.com/r/joomlaprojects/docker-images
 
 * Apache 2.4
 * MySQL 5.7
-* PHP 8.2
+* PHP 8.1
 * Composer (System wide)
 
 ### GUI Software
