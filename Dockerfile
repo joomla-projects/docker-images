@@ -19,8 +19,8 @@ RUN add-apt-repository ppa:ondrej/php
 
 # Install PHP 
 RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y \
-    php8.1 php8.1-cli php8.1-curl php8.1-gd php8.1-mysql php8.1-zip \
-    php8.1-xml php8.1-ldap php8.1-mbstring libapache2-mod-php8.1 php8.1-pgsql
+    php8.2 php8.2-cli php8.2-curl php8.2-gd php8.2-mysql php8.2-zip \
+    php8.2-xml php8.2-ldap php8.2-mbstring libapache2-mod-php8.2 php8.2-pgsql
 
 # use newer NodeJS version
 RUN curl -sL deb.nodesource.com/setup_12.x | bash -
