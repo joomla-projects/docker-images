@@ -2,7 +2,7 @@
 
 Docker with LAMP setup, firefox, chrome and other tools for system tests with codeception.
 
-Based on docker Ubuntu 16.04 image
+Based on docker  cypress/browsers:node16.14.2-slim-chrome100-ff99-edge image which is Debian 10 based
 
 Current image can also be found at dockerhub:
 
@@ -14,7 +14,7 @@ https://hub.docker.com/r/joomlaprojects/docker-images
 
 * Apache 2.4
 * MySQL 5.7
-* PHP 7
+* PHP 8.2
 * Composer (System wide)
 
 ### GUI Software
