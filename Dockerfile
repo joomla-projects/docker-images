@@ -27,6 +27,9 @@ RUN pecl install memcached \
 RUN pecl install redis \
 	&& docker-php-ext-enable redis
 
+RUN pecl install ast \
+	&& docker-php-ext-enable ast
+
 RUN pecl install apcu \
 	&& docker-php-ext-enable apcu \
 	&& echo "\napc.enable=1\napc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
