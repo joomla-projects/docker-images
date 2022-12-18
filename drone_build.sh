@@ -29,7 +29,7 @@ git add libraries/src/Version.php
 git commit -m "${PRVERSIONSTRING}"
 git tag -m "${PRVERSIONSTRING}" "${PRVERSIONSTRING}"
 
-php build/build.php --remote="${PRVERSIONSTRING}" --exclude-gzip --exclude-bzip2 --include-zstd
+php build/build.php --remote="${PRVERSIONSTRING}" --exclude-gzip --exclude-bzip2 --include-zstd --disable-patch-packages
 
 # Move files to upload directory
 mkdir upload
