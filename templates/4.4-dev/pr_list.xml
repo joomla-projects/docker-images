@@ -3,4 +3,6 @@
   <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="4.0" detailsurl="%PRUPDATEEXTENSIONURL%" />
   <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="4.1" detailsurl="%PRUPDATEEXTENSIONURL%" />
   <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="4.2" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="4.3" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="4.4" detailsurl="%PRUPDATEEXTENSIONURL%" />  
 </extensionset>
