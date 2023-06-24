@@ -7,7 +7,7 @@ echo "Current directory: "$(pwd)
 
 current_directory=$(pwd)
 
-EXTRAVERSION=`php -r 'const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::EXTRA_VERSION;'`
+EXTRAVERSION=`php -r 'const _JEXEC=true; const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::EXTRA_VERSION;'`
 EXTRAVERSION="${EXTRAVERSION}+pr.${DRONE_PULL_REQUEST}"
 
 (
