@@ -1,2 +1,8 @@
 #!/bin/bash
-docker build -t joomla-tuf:latest -f Dockerfile .
+
+if [ -f .env ];
+then
+  . .env
+fi
+
+docker build -t "${DOCKER_IMAGE}" -f Dockerfile .

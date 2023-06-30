@@ -15,6 +15,10 @@
 
 ## VARS
 
+The following variables are used.
+
+You can create the [`.env`](./.env) file from the [`env.sample`](./env.example) file.
+
 | ⚠️ REQUIRED | VAR | DEFAULT | COMMENT |
 | -- | ------------------ | -------- | -------------------------------------------------- |
 | ⚠️ | GIT_BRANCH_NAME    |          | The Branch name to checkout in the Container       |
@@ -33,11 +37,17 @@ Build the Image
 docker build -t joomla-tuf:latest -f Dockerfile .
 ```
 
+You can also use the [`build.sh](./build.sh).
+
+```bash
+bash build.sh
+```
+
 Run your commands directly against tuf.
 Use `-e` in `docker run` to pass ENV variables.
 
 ```bash
-docker run -e ACCESS_TOKEN=REDACTED_TOKEN -e GIT_BRANCH_NAME=main joomla-tuf "help"
+docker run --rm -e ACCESS_TOKEN=REDACTED_TOKEN -e GIT_BRANCH_NAME=main joomla-tuf "help"
 usage: tuf [-h|--help] [-d|--dir=<dir>] [--insecure-plaintext] <command> [<args>...]
 ```
 
