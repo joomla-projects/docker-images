@@ -23,7 +23,7 @@ function localread() {
 
   if [ -z "${!L_VAR}" ];
   then
-    read -${L_ADDITIONAL}rep "${L_LABEL} " -i "${L_DEFAULT}" ${L_VAR}
+    read "-${L_ADDITIONAL}rep" "${L_LABEL} " -i "${L_DEFAULT}" "${L_VAR}"
   fi
 }
 
@@ -73,14 +73,14 @@ localread "Action to be passed to TUF:" "" TUF_PARAMS
 declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-signature [5]=sign-signature [6]=commit-signature [7]=update-timestamp [8]=bash )
 
 for key in "${!TUF_ACTIONS[@]}"; do
-  if [ "x$key" == "x$TUF_PARAMS" ]; then
+  if [ "$key" == "$TUF_PARAMS" ]; then
     TUF_PARAMS=${TUF_ACTIONS[$key]};
   fi
 done
 
 # Prepare standard environment parameters for the docker iamge
-DOCKER_ENV_FILE=`mktemp`
-echo $DOCKER_ENV_FILE;
+DOCKER_ENV_FILE=$(mktemp)
+echo "$DOCKER_ENV_FILE";
 echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $DOCKER_ENV_FILE
 echo "GIT_BASE_BRANCH_NAME=${GIT_BASE_BRANCH_NAME}" >> $DOCKER_ENV_FILE
 echo "GIT_TARGET_BRANCH_NAME=${GIT_TARGET_BRANCH_NAME}" >> $DOCKER_ENV_FILE
@@ -95,8 +95,8 @@ echo "TUF_PARAMETERS=${TUF_PARAMETERS}" >> $DOCKER_ENV_FILE
 echo "=> Run TUF process"
 
 if [[ $TUF_PARAMS = "bash" ]]; then
-    docker run -ti \
-        --env-file $DOCKER_ENV_FILE \
+    docker run --rm -ti \
+        --env-file "$DOCKER_ENV_FILE" \
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
@@ -106,14 +106,14 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
     localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
-    docker run \
-        --env-file $DOCKER_ENV_FILE \
+    docker run --rm \
+        --env-file "${DOCKER_ENV_FILE}" \
         -e UPDATE_NAME="${UPDATE_NAME}"\
         -e UPDATE_DESCRIPTION="${UPDATE_DESCRIPTION}"\
         -e UPDATE_VERSION="${UPDATE_VERSION}"\
         -e UPDATE_INFO_URL="${UPDATE_INFO_URL}"\
         -e UPDATE_INFO_TITLE="${UPDATE_INFO_TITLE}"\
-        -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
+        -v "$(pwd)/updates:/go" "${DOCKER_IMAGE}" \
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "create-signature" || $TUF_PARAMS = "sign-signature" || $TUF_PARAMS = "commit-signature" ]]; then
     echo "=> Create a signature"
@@ -123,18 +123,18 @@ elif [[ $TUF_PARAMS = "create-signature" || $TUF_PARAMS = "sign-signature" || $T
     else
       SIGNATURE_ROLE="root"
     fi
-    docker run \
-        --env-file $DOCKER_ENV_FILE \
+    docker run --rm \
+        --env-file "$DOCKER_ENV_FILE" \
         -e SIGNATURE_ROLE="${SIGNATURE_ROLE}"\
         -e SIGNATURE_ROLE_NAME="${SIGNATURE_ROLE_NAME}"\
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
 else
-    docker run \
-        --env-file $DOCKER_ENV_FILE \
+    docker run --rm \
+        --env-file "$DOCKER_ENV_FILE" \
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
 fi
 
 # Cleanup temp file
-rm $DOCKER_ENV_FILE
+# rm "$DOCKER_ENV_FILE"
 
