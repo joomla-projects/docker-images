@@ -136,5 +136,5 @@ else
 fi
 
 # Cleanup temp file
-# rm "$DOCKER_ENV_FILE"
+rm "$DOCKER_ENV_FILE"
 
