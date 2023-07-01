@@ -19,8 +19,8 @@ function requestKey() {
     BRANCH="request/$keyType/$(echo "$GIT_USER_NAME" | tr -d " \t\r")/$(date +%s)"
     git checkout -b "$BRANCH"
 
-    echo '=> Generating root key'
-    tuf gen-key "$keyType"
+    echo "=> Generating $keyType key"
+    tuf gen-key --expires=548 "$keyType"
 
     echo '=> Adding staged request'
     git add staged/
@@ -68,4 +68,3 @@ else
     echo '=> Wrong input - Exit'
     exit 1
 fi
-
