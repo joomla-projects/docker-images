@@ -35,7 +35,7 @@ case "$1" in
       L_git_add_and_commit "Update timestamp"
       ;;
   "prepare-release")
-      sed "s/\$VERSION/${UPDATE_VERSION}/g" $basedir/templates/update-info-4.json | tee /tmp/update-info.json
+      sed "s/\$VERSION/${UPDATE_VERSION}/g" $basedir/templates/update-info-$(cut -d '.' -f 1 <<< "$UPDATE_VERSION").json | tee /tmp/update-info.json
       cat <<< $(jq '.["description"] = "'"${UPDATE_DESCRIPTION}"'"' /tmp/update-info.json) > /tmp/update-info.json
       cat <<< $(jq '.["infourl"]["url"] = "'"${UPDATE_INFO_URL}"'"' /tmp/update-info.json) > /tmp/update-info.json
       cat <<< $(jq '.["infourl"]["title"] = "'"${UPDATE_INFO_TITLE}"'"' /tmp/update-info.json) > /tmp/update-info.json

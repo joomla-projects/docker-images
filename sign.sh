@@ -136,6 +136,15 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
         -e SIGNATURE_ROLE_NAME="${SIGNATURE_ROLE_NAME}"\
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
+elif [[ $TUF_PARAMS = "sign-release" ]]; then
+  echo '=> Move file from release to updates/stage/targets'
+  for file in ./release**/*.zip; do
+    echo $file
+    mv "$file" updates/staged/targets/
+  done
+  docker run --rm \
+    --env-file "$DOCKER_ENV_FILE" \
+    -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
 else
     docker run --rm \
         --env-file "$DOCKER_ENV_FILE" \
