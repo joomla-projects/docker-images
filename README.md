@@ -55,26 +55,80 @@ usage: tuf [-h|--help] [-d|--dir=<dir>] [--insecure-plaintext] <command> [<args>
 
 This documents which paramters are avaible for the `sign.sh` script, when asked for `Parameter to be passed to TUF:`.
 
-### prepare-release
+Run [`sign.sh`](./sign.sh) for the wrapper client:
+
+```bash
+bash sign.sh
+```
+
+### The layout
+
+```bash
+=> Reading local git environment
+=> Asking for needed User inputs
+
+Supported actions
+
+Release Actions:
+ 1 prepare-release
+ 2 sign-release
+ 3 release
+
+Signature Actions:
+ 4 create-signature
+ 5 sign-signature
+ 6 commit-signature
+
+Maintenance Actions:
+ 7 update-timestamp
+ 8 bash
+ 9 DEBUG Shell
+
+Action to be passed to TUF: 
+```
+
+Each option is explained bellow.
+
+### 1 prepare-release
 
 The `prepare-release` parameter will generate from asked Inputs a `update-info.json` which thenn will be used by TUF and commited directly.
 
-### sign-release
+### 2 sign-release
 
 The sign-rlease parameter will sign all targets defined in the `targets.json` and push the changes directly.
 
-### release
+### 3 release
 
 The `release` parameter is meant for CI integration.
 
 The result will be a signed release in a Github Pullrequest.
 
-### update-timestamp
+### 4 create-signature
+
+TBD.
+
+### 5 sign-signature
+
+TBD.
+
+### 6 commit-signature
+
+TBD.
+
+### 7 update-timestamp
 
 The `update-timestamp` paramter is meant for a CRON like CI integration.
 
 It will run `tuf timestamp` and `tuf commit` and push the changes directly.
 
-### bash
+### 8 bash
 
 This will open an interactive shell inside the Docker TUF Client so users can work with TUF directly.
+
+This will also setup the repository and everything else needed for tuf.
+
+### 9 DEBUG Shell
+
+This will open just an interactive shell with no extras.
+
+Usefull for debugging.
