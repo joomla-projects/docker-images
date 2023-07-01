@@ -4,6 +4,15 @@ TUF="/tuf/bin/tuf${TUF_PARAMETERS}"
 GIT="/usr/bin/git"
 GH="/usr/bin/gh"
 
+function prettyJson() {
+    # make all *.json files pretty
+    for file in **/*.json; do
+        tmpfile=$(mktemp)
+        jq . "$file" > "$tmpfile"
+        mv "$tmpfile" "$file"
+    done
+}
+
 function L_github_login() {
   $GH auth login --with-token <<<"${ACCESS_TOKEN}"
 }
@@ -49,6 +58,7 @@ function L_git_update() {
 }
 
 function L_git_add_and_commit() {
+  prettyJson
   $GIT add .
   $GIT commit -m "$1"
   $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}
