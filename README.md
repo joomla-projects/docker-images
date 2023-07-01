@@ -75,7 +75,7 @@ Release Actions:
  3 release
 
 Signature Actions:
- 4 create-signature
+ 4 create-key
  5 sign-signature
  6 commit-signature
 
@@ -103,7 +103,7 @@ The `release` parameter is meant for CI integration.
 
 The result will be a signed release in a Github Pullrequest.
 
-### 4 create-signature
+### 4 create-key
 
 TBD.
 
