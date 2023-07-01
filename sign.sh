@@ -27,6 +27,30 @@ function localread() {
   fi
 }
 
+function userConfirm() {
+  read -rp "Confirm (y/N): " USERCONFIRMATION
+  if [[ $USERCONFIRMATION = "y" || $USERCONFIRMATION = "Y" ]]; then
+    :
+    else
+      echo '=> Quitting'
+      exit 1
+  fi
+}
+
+function checkReleaseFolder() {
+  release_folder_status="$(find ./release/ -iname '*.zip')"
+  if [[ $release_folder_status != "" ]]; then
+    echo '=> Move file from release to updates/stage/targets'
+    for file in ./release**/*.zip; do
+      echo $file
+      mv "$file" updates/staged/targets/
+    done
+  else
+    echo '=> Relase Folder has no ZIP files, is this correct?'
+    userConfirm
+  fi
+}
+
 
 echo "=> Reading local git environment"
 GIT_USER_NAME=$(git config user.name)
@@ -107,7 +131,8 @@ elif [[ $TUF_PARAMS = "DEBUG" ]]; then
         --env-file "$DOCKER_ENV_FILE" \
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE}
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
-    echo "=> Add update files ans sign them"
+    checkReleaseFolder
+    echo "=> Add update files and sign them"
     localread "Please enter the Update Version:" "" UPDATE_VERSION
     localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
@@ -137,11 +162,6 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "sign-release" ]]; then
-  echo '=> Move file from release to updates/stage/targets'
-  for file in ./release**/*.zip; do
-    echo $file
-    mv "$file" updates/staged/targets/
-  done
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
     -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
