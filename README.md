@@ -76,8 +76,8 @@ Release Actions:
 
 Signature Actions:
  4 create-key
- 5 sign-signature
- 6 commit-signature
+ 5 sign-key
+ 6 commit-key
 
 Maintenance Actions:
  7 update-timestamp
@@ -107,11 +107,11 @@ The result will be a signed release in a Github Pullrequest.
 
 TBD.
 
-### 5 sign-signature
+### 5 sign-key
 
 TBD.
 
-### 6 commit-signature
+### 6 commit-key
 
 TBD.
 
