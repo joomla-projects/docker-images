@@ -1,4 +1,4 @@
-FROM golang:1.20-bullseye@sha256:4d4ba872594961e984692f8ae0bf7e893c83ed02f3191789fbd6e9bd524da15b
+FROM golang:1.20-bookworm@sha256:fd8d0f8f05c0254d80cfb040e2c6351e477593b7dbf24b0d495ba1e97aa14146
 
 ARG UID=1000 \
     GID=1000
