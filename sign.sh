@@ -67,10 +67,11 @@ echo ""
 echo "Maintenance Actions:"
 echo " 7 update-timestamp"
 echo " 8 bash"
+echo " 9 DEBUG Shell"
 echo ""
 localread "Action to be passed to TUF:" "" TUF_PARAMS
 
-declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-signature [5]=sign-signature [6]=commit-signature [7]=update-timestamp [8]=bash )
+declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-signature [5]=sign-signature [6]=commit-signature [7]=update-timestamp [8]=bash [9]=DEBUG)
 
 for key in "${!TUF_ACTIONS[@]}"; do
   if [ "$key" == "$TUF_PARAMS" ]; then
@@ -99,6 +100,12 @@ if [[ $TUF_PARAMS = "bash" ]]; then
         --env-file "$DOCKER_ENV_FILE" \
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
+elif [[ $TUF_PARAMS = "DEBUG" ]]; then
+    echo '=> Starting Shell Only for debugging'
+    docker run --rm -ti \
+        --entrypoint "/bin/bash" \
+        --env-file "$DOCKER_ENV_FILE" \
+        -v "$(pwd)/updates:/go" ${DOCKER_IMAGE}
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     echo "=> Add update files ans sign them"
     localread "Please enter the Update Version:" "" UPDATE_VERSION

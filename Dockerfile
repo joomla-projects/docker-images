@@ -1,8 +1,16 @@
-FROM golang:1.18-bullseye@sha256:5417b4917fa7ed3ad2678a3ce6378a00c95bfd430c2ffa39936fce55130b5f2c
+FROM golang:1.20-bullseye@sha256:4d4ba872594961e984692f8ae0bf7e893c83ed02f3191789fbd6e9bd524da15b
 
-ENV TUF_VERSION=ae904d2bb977a54e6a5527513c4d398c8d9cc285
+ARG UID=1000 \
+    GID=1000
+ENV eUID=$UID \
+    eGID=$GID
+
+RUN groupadd $eGID && useradd --system -u $eUID -g $eGID -s /bin/bash -m --home-dir /go/ ihavenoname
+
+# v0.5.2
+ENV TUF_VERSION=91c85a09b56850c90201fa919efac8433bf4f907
 ENV GIT_URL=https://github.com/joomla/updates.git
-ENV GITHUB_CLI_VERSION=2.12.1
+ENV GITHUB_CLI_VERSION=2.31.0
 ENV GIT_ASKPASS=/tuf/git_env_password.sh
 
 RUN echo "=> Running apt-get update" && \
@@ -27,6 +35,12 @@ COPY docker-entrypoint.sh /tuf/docker-entrypoint.sh
 COPY functions.inc.sh /tuf/functions.inc.sh
 COPY git_env_password.sh /tuf/git_env_password.sh
 RUN chmod +x /tuf/docker-entrypoint.sh
+
+COPY Docker/tuf-scripts /usr/local/bin/
+
+USER ihavenoname
+
+WORKDIR /go/
 
 ENTRYPOINT ["/tuf/docker-entrypoint.sh"]
 CMD ["/tuf/docker-entrypoint.sh"]
