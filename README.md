@@ -34,7 +34,7 @@ You can create the [`.env`](./.env) file from the [`env.sample`](./env.example) 
 Build the Image
 
 ```bash
-docker build -t joomla-tuf:latest -f Dockerfile .
+docker build -t joomla-tuf:updater -f Dockerfile .
 ```
 
 You can also use the [`build.sh](./build.sh).
