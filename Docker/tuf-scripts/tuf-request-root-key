@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo '=> Preparing Repo'
+echo '=> Create Branch with Username and Unix Timestamp'
+BRANCH="request/root/$(echo "$GIT_USER_NAME" | tr -d " \t\r")/$(date +%s)"
+git checkout -b "$BRANCH"
+
+echo '=> Generating root key'
+tuf gen-key root
+
+echo '=> Adding staged request'
+git add staged/
+
+echo '=> Comminting request'
+
+git commit -m "@${GIT_USER_NAME} requesting root key"
+git push --set-upstream origin "$BRANCH"
+
+echo '=> Request submitted! - Exit'
+echo '------------------------------'
+exit 0
