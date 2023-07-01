@@ -68,9 +68,10 @@ then
   exit 1
 fi
 
-echo "=> Asking for needed User inputs"
-localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
-if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
+# TODO - Delete
+# echo "=> Asking for needed User inputs"
+# localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
+# if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
 
 localread "Github Personnel Access Token:" "" ACCESS_TOKEN s
 if [ -z "${ACCESS_TOKEN}" ]; then echo "Aborting no Personnel Access Token given."; exit 1; fi
@@ -138,6 +139,7 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
     localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
+    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
     docker run --rm \
         --env-file "${DOCKER_ENV_FILE}" \
         -e UPDATE_NAME="${UPDATE_NAME}"\
@@ -155,6 +157,7 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
     else
       SIGNATURE_ROLE="root"
     fi
+    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=key\/${GIT_BASE_BRANCH_NAME}\/${SIGNATURE_ROLE}/g" "$DOCKER_ENV_FILE"
     docker run --rm -ti \
         --env-file "$DOCKER_ENV_FILE" \
         -e SIGNATURE_ROLE="${SIGNATURE_ROLE}"\
@@ -162,6 +165,8 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "sign-release" ]]; then
+  localread "Please enter which Version you would like to sign:" "" UPDATE_VERSION
+  sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
     -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
