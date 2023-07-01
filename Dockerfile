@@ -36,8 +36,6 @@ COPY functions.inc.sh /tuf/functions.inc.sh
 COPY git_env_password.sh /tuf/git_env_password.sh
 RUN chmod +x /tuf/docker-entrypoint.sh
 
-COPY Docker/tuf-scripts /usr/local/bin/
-
 USER ihavenoname
 
 WORKDIR /go/
