@@ -5,4 +5,4 @@ then
   . .env
 fi
 
-docker build -t "${DOCKER_IMAGE:-joomlaprojects/docker-images:updater}" -f Dockerfile .
+docker build --build-arg UID"=$(id -u)" --build-arg GID="$(id -g)" -t "${DOCKER_IMAGE:-joomlaprojects/docker-images:updater}" -f Dockerfile .

@@ -1,6 +1,11 @@
 FROM golang:1.20-bullseye@sha256:4d4ba872594961e984692f8ae0bf7e893c83ed02f3191789fbd6e9bd524da15b
 
-RUN groupadd 1000 && useradd --system -u 1000 -g 1000 -s /bin/bash -m --home-dir /go/ ihavenoname
+ARG UID=1000 \
+    GID=1000
+ENV eUID=$UID \
+    eGID=$GID
+
+RUN groupadd $eGID && useradd --system -u $eUID -g $eGID -s /bin/bash -m --home-dir /go/ ihavenoname
 
 # v0.5.2
 ENV TUF_VERSION=91c85a09b56850c90201fa919efac8433bf4f907
