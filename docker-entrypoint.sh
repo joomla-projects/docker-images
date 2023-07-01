@@ -3,7 +3,7 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
-basedir=`pwd`
+basedir=$(pwd)
 
 . /tuf/functions.inc.sh
 
@@ -53,10 +53,10 @@ case "$1" in
       L_git_add_and_commit "Release: ${GIT_TARGET_BRANCH_NAME}"
       L_github_create_and_merge_pr "Release: ${GIT_TARGET_BRANCH_NAME}"
       ;;
-  "create-signature")
-      tmpfile=`mktemp`
-      $TUF gen-key --expires=1825 ${SIGNATURE_ROLE} | tee $tmpfile
-      keyid=`cat $tmpfile | awk '{print $6}'`
+  "create-key")
+      tmpfile=$(mktemp)
+      $TUF gen-key --expires=548 ${SIGNATURE_ROLE} | tee $tmpfile
+      keyid=$(cat $tmpfile | awk '{print $6}')
 
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json

@@ -22,17 +22,31 @@ function requestKey() {
     echo "=> Generating $keyType key"
     tuf gen-key --expires=548 "$keyType"
 
-    echo '=> Adding staged request'
-    git add staged/
+    read -rp "=> You are requesting a ${keyType} to ${BRANCH} is this correct? (y/N): " USERCONFIRM
 
-    echo '=> Comminting request'
+    if [[ $USERCONFIRM = "y" || $USERCONFIRM = "Y" ]]; then
+      echo '=> Adding staged request'
+      git add staged/
 
-    git commit -m "@${GIT_USER_NAME} requesting root key"
-    git push --set-upstream origin "$BRANCH"
+      echo '=> Comminting request'
 
-    echo '=> Request submitted! - Exit'
-    echo '------------------------------'
-    exit 0
+      git commit -m "@${GIT_USER_NAME} requesting root key"
+
+      echo '=> Pusing changes'
+      git push --set-upstream origin "$BRANCH"
+
+      echo '=> Request submitted! - Exit'
+      echo '------------------------------'
+      exit 0
+
+      else
+        echo '=> Cancle request - Ressting'
+        git checkout .
+        git reset --hard
+        git clean -fd
+        echo '=> Exit'
+        exit 1
+    fi
 }
 
 echo '=> Which Role Key would you like to generate?'

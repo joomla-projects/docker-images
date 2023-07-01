@@ -60,7 +60,7 @@ echo " 2 sign-release"
 echo " 3 release"
 echo ""
 echo "Signature Actions:"
-echo " 4 create-signature"
+echo " 4 create-key"
 echo " 5 sign-signature"
 echo " 6 commit-signature"
 echo ""
@@ -71,7 +71,7 @@ echo " 9 DEBUG Shell"
 echo ""
 localread "Action to be passed to TUF:" "" TUF_PARAMS
 
-declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-signature [5]=sign-signature [6]=commit-signature [7]=update-timestamp [8]=bash [9]=DEBUG)
+declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-key [5]=sign-signature [6]=commit-signature [7]=update-timestamp [8]=bash [9]=DEBUG)
 
 for key in "${!TUF_ACTIONS[@]}"; do
   if [ "$key" == "$TUF_PARAMS" ]; then
@@ -122,15 +122,15 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
         -e UPDATE_INFO_TITLE="${UPDATE_INFO_TITLE}"\
         -v "$(pwd)/updates:/go" "${DOCKER_IMAGE}" \
         "${TUF_PARAMS}"
-elif [[ $TUF_PARAMS = "create-signature" || $TUF_PARAMS = "sign-signature" || $TUF_PARAMS = "commit-signature" ]]; then
+elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-signature" || $TUF_PARAMS = "commit-signature" ]]; then
     echo "=> Create a signature"
-    if [[ $TUF_PARAMS = "create-signature" ]]; then
+    if [[ $TUF_PARAMS = "create-key" ]]; then
       localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
       localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
     else
       SIGNATURE_ROLE="root"
     fi
-    docker run --rm \
+    docker run --rm -ti \
         --env-file "$DOCKER_ENV_FILE" \
         -e SIGNATURE_ROLE="${SIGNATURE_ROLE}"\
         -e SIGNATURE_ROLE_NAME="${SIGNATURE_ROLE_NAME}"\
