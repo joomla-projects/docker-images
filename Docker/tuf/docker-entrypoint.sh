@@ -72,11 +72,11 @@ case "$1" in
       $TUF payload root.json > staged/root.json.payload
       L_git_add_and_commit "Prepare key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"
       ;;
-  "sign-signature")
+  "sign-key")
       $TUF sign-payload --role=${SIGNATURE_ROLE} staged/${SIGNATURE_ROLE}.json.payload > staged/${SIGNATURE_ROLE}.json.sigs.$RANDOM
       L_git_add_and_commit "Signed signature key"
       ;;
-  "commit-signature")
+  "commit-key")
       jq -s add staged/${SIGNATURE_ROLE}.json.sigs.* > staged/${SIGNATURE_ROLE}.json.sigs
       $TUF add-signatures --signatures staged/${SIGNATURE_ROLE}.json.sigs ${SIGNATURE_ROLE}.json
       rm staged/${SIGNATURE_ROLE}.json.*
