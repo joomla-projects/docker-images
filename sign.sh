@@ -45,7 +45,6 @@ function checkReleaseFolder() {
             echo "$file"
             versionJSON=$(python3 semver.py "$file")
             UPDATE_VERSION="$(jq .version <<< "$versionJSON" | tr -d '"')"
-            echo "$UPDATE_VERSION"
             mv "$file" updates/staged/targets/
         done
     else
@@ -137,12 +136,11 @@ elif [[ $TUF_PARAMS = "DEBUG" ]]; then
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     checkReleaseFolder
     echo "=> Add update files and sign them"
-    localread "Please enter the Update Version:" "" UPDATE_VERSION
-    localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
-    localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
+    UPDATE_NAME="Joomla! ${UPDATE_VERSION}"
+    UPDATE_DESCRIPTION="${UPDATE_NAME} Release"
     # INFO Url must be asked
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
-    localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
+    UPDATE_INFO_TITLE="${UPDATE_NAME} Release"
     sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
     docker run --rm \
         --env-file "${DOCKER_ENV_FILE}" \
