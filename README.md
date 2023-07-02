@@ -1,5 +1,9 @@
 # Joomla! TUF Docker
 
+More Documentation can be found here:
+
+<https://internal.joomla.org/docs/production/update/>
+
 ## Table Of Content
 
 - [Jooma! Tuf Docker](#joomla-tuf-docker)- [Joomla! TUF Docker](#joomla-tuf-docker)
