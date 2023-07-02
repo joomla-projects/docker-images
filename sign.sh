@@ -137,6 +137,7 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     localread "Please enter the Update Version:" "" UPDATE_VERSION
     localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
+    # INFO Url must be asked
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
     localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
     sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
@@ -166,6 +167,12 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "sign-release" ]]; then
   localread "Please enter which Version you would like to sign:" "" UPDATE_VERSION
+  sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
+  docker run --rm \
+    --env-file "$DOCKER_ENV_FILE" \
+    -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
+elif [[ $TUF_PARAMS = "release" ]]; then
+  localread "Please enter which Version you would like to release:" "" UPDATE_VERSION
   sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
