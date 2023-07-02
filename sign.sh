@@ -27,6 +27,30 @@ function localread() {
   fi
 }
 
+function userConfirm() {
+  read -rp "Confirm (y/N): " USERCONFIRMATION
+  if [[ $USERCONFIRMATION = "y" || $USERCONFIRMATION = "Y" ]]; then
+    :
+    else
+      echo '=> Quitting'
+      exit 1
+  fi
+}
+
+function checkReleaseFolder() {
+  release_folder_status="$(find ./release/ -iname '*.zip')"
+  if [[ $release_folder_status != "" ]]; then
+    echo '=> Move file from release to updates/stage/targets'
+    for file in ./release**/*.zip; do
+      echo $file
+      mv "$file" updates/staged/targets/
+    done
+  else
+    echo '=> Relase Folder has no ZIP files, is this correct?'
+    userConfirm
+  fi
+}
+
 
 echo "=> Reading local git environment"
 GIT_USER_NAME=$(git config user.name)
@@ -44,9 +68,10 @@ then
   exit 1
 fi
 
-echo "=> Asking for needed User inputs"
-localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
-if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
+# TODO - Delete
+# echo "=> Asking for needed User inputs"
+# localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
+# if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
 
 localread "Github Personnel Access Token:" "" ACCESS_TOKEN s
 if [ -z "${ACCESS_TOKEN}" ]; then echo "Aborting no Personnel Access Token given."; exit 1; fi
@@ -107,12 +132,14 @@ elif [[ $TUF_PARAMS = "DEBUG" ]]; then
         --env-file "$DOCKER_ENV_FILE" \
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE}
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
-    echo "=> Add update files ans sign them"
+    checkReleaseFolder
+    echo "=> Add update files and sign them"
     localread "Please enter the Update Version:" "" UPDATE_VERSION
     localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
     localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
+    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
     docker run --rm \
         --env-file "${DOCKER_ENV_FILE}" \
         -e UPDATE_NAME="${UPDATE_NAME}"\
@@ -130,6 +157,7 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
     else
       SIGNATURE_ROLE="root"
     fi
+    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=key\/${GIT_BASE_BRANCH_NAME}\/${SIGNATURE_ROLE}/g" "$DOCKER_ENV_FILE"
     docker run --rm -ti \
         --env-file "$DOCKER_ENV_FILE" \
         -e SIGNATURE_ROLE="${SIGNATURE_ROLE}"\
@@ -137,11 +165,8 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "sign-release" ]]; then
-  echo '=> Move file from release to updates/stage/targets'
-  for file in ./release**/*.zip; do
-    echo $file
-    mv "$file" updates/staged/targets/
-  done
+  localread "Please enter which Version you would like to sign:" "" UPDATE_VERSION
+  sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
     -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
