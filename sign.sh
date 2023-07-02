@@ -38,17 +38,20 @@ function userConfirm() {
 }
 
 function checkReleaseFolder() {
-  release_folder_status="$(find ./release/ -iname '*.zip')"
-  if [[ $release_folder_status != "" ]]; then
-    echo '=> Move file from release to updates/stage/targets'
-    for file in ./release**/*.zip; do
-      echo $file
-      mv "$file" updates/staged/targets/
-    done
-  else
-    echo '=> Relase Folder has no ZIP files, is this correct?'
-    userConfirm
-  fi
+    release_folder_status="$(find ./release/ -iname '*.zip')"
+    if [[ $release_folder_status != "" ]]; then
+        echo '=> Move file from release to updates/stage/targets'
+        for file in ./release**/*.zip; do
+            echo "$file"
+            versionJSON=$(python3 semver.py "$file")
+            UPDATE_VERSION="$(jq .version <<< "$versionJSON" | tr -d '"')"
+            echo "$UPDATE_VERSION"
+            mv "$file" updates/staged/targets/
+        done
+    else
+        echo '=> Relase Folder has no ZIP files, is this correct?'
+        userConfirm
+    fi
 }
 
 
