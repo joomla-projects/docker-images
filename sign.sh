@@ -43,6 +43,10 @@ function checkReleaseFolder() {
         echo '=> Move file from release to updates/stage/targets'
         for file in ./release**/*.zip; do
             echo "$file"
+            # INFO
+            # the semver.py return a json string
+            # Example File ./release/Joomla_5.0.6-Stable-Update_Package.zip will return
+            # {"version": "5.0.6-Stable-Update", "major": "5", "minor": "0", "patch": "6", "prerelease": "Stable-Update", "buildmetadata": null}
             versionJSON=$(python3 semver.py "$file")
             UPDATE_VERSION="$(jq .version <<< "$versionJSON" | tr -d '"')"
             mv "$file" updates/staged/targets/
