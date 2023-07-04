@@ -38,17 +38,23 @@ function userConfirm() {
 }
 
 function checkReleaseFolder() {
-  release_folder_status="$(find ./release/ -iname '*.zip')"
-  if [[ $release_folder_status != "" ]]; then
-    echo '=> Move file from release to updates/stage/targets'
-    for file in ./release**/*.zip; do
-      echo $file
-      mv "$file" updates/staged/targets/
-    done
-  else
-    echo '=> Relase Folder has no ZIP files, is this correct?'
-    userConfirm
-  fi
+    release_folder_status="$(find ./release/ -iname '*.zip')"
+    if [[ $release_folder_status != "" ]]; then
+        echo '=> Move file from release to updates/stage/targets'
+        for file in ./release**/*.zip; do
+            echo "$file"
+            # INFO
+            # the semver.py return a json string
+            # Example File ./release/Joomla_5.0.6-Stable-Update_Package.zip will return
+            # {"version": "5.0.6-Stable-Update", "major": "5", "minor": "0", "patch": "6", "prerelease": "Stable-Update", "buildmetadata": null}
+            versionJSON=$(python3 semver.py "$file")
+            UPDATE_VERSION="$(jq .version <<< "$versionJSON" | tr -d '"')"
+            mv "$file" updates/staged/targets/
+        done
+    else
+        echo '=> Relase Folder has no ZIP files, is this correct?'
+        userConfirm
+    fi
 }
 
 
@@ -134,12 +140,11 @@ elif [[ $TUF_PARAMS = "DEBUG" ]]; then
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     checkReleaseFolder
     echo "=> Add update files and sign them"
-    localread "Please enter the Update Version:" "" UPDATE_VERSION
-    localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
-    localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
+    UPDATE_NAME="Joomla! ${UPDATE_VERSION}"
+    UPDATE_DESCRIPTION="${UPDATE_NAME} Release"
     # INFO Url must be asked
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
-    localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
+    UPDATE_INFO_TITLE="${UPDATE_NAME} Release"
     sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
     docker run --rm \
         --env-file "${DOCKER_ENV_FILE}" \
