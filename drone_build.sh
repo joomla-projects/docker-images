@@ -19,7 +19,7 @@ file_put_contents("libraries/src/Version.php", \$content);
 JOOMLA
 ) | php
 
-PRVERSIONSTRING=`php -r 'const _JEXEC=true; const _JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo (new \Joomla\CMS\Version)->getShortVersion();'`
+PRVERSIONSTRING=`php -r 'const _JEXEC=true; const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo (new \Joomla\CMS\Version)->getShortVersion();'`
 JOOMLAVERSION=$PRVERSIONSTRING
 
 git config --global user.email "drone@ci.joomla.org"
