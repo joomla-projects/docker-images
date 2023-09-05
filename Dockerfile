@@ -18,7 +18,7 @@ RUN apt-get update
 
 # we use the enviroment variable to stop debconf from asking questions..
 RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y apache2 \
-    php8.2  php8.2-cli php8.2-curl php8.2-gd php8.2-mysql php8.2-zip php8.2-xml php8.2-ldap php8.2-mbstring libapache2-mod-php8.2 php8.2-pgsql \
+    php8.3 php8.3-cli php8.3-curl php8.3-gd php8.3-mysql php8.3-zip php8.3-xml php8.3-ldap php8.3-mbstring libapache2-mod-php8.3 php8.3-pgsql \
     curl wget unzip git netcat rsync
 
 # Remove unneded library which leads to an error in cypress
