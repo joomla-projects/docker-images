@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.3.0RC1-apache-bookworm
 
 LABEL authors="Hannes Papenberg, Harald Leithner"
 
