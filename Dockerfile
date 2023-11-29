@@ -1,4 +1,4 @@
-FROM php:8.3-rc-apache-bullseye
+FROM php:8.3-apache
 
 LABEL authors="Hannes Papenberg, Harald Leithner"
 
