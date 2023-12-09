@@ -1,6 +1,9 @@
 #!/bin/bash
 
+SIGNER_DIR="$(dirname "$(readlink -f "$0")")"
+
 DOCKER_IMAGE="joomlaprojects/docker-images:updater"
+DOCKER_IMAGE="joomla-tuf:latest"
 
 GIT_BASE_BRANCH_NAME=main
 GIT_TARGET_BRANCH_NAME=next
@@ -43,7 +46,9 @@ function checkReleaseFolder() {
     echo '=> Move file from release to updates/stage/targets'
     for file in ./release**/*.zip; do
       echo $file
-      mv "$file" updates/staged/targets/
+      mkdir -p "updates/staged/targets/"
+      #mv "$file" updates/staged/targets/
+      cp "$file" updates/staged/targets/
     done
   else
     echo '=> Relase Folder has no ZIP files, is this correct?'
@@ -51,6 +56,36 @@ function checkReleaseFolder() {
   fi
 }
 
+function loadkeys() {
+    mkdir -p $SIGNER_DIR/updates/keys
+    $($SIGNER_DIR/tools/keys_$KEYADAPTER.sh)
+}
+
+function checkkey() {
+    if [ ! -f "$SIGNER_DIR/updates/keys/$1.json" ]; then
+        echo "Key 'targets' not found."
+        cleanupdocker
+        exit 1
+    fi
+}
+
+# if we create new keys we will save them automatically to the private directory
+function savekeys() {
+    if [ "$(ls -A $SIGNER_DIR/updates/keys)" ]; then
+        echo "New keys found."
+        NOW=$(date +%Y-%m-%dT%H:%M:%S)
+        mkdir -p $SIGNER_DIR/private/$NOW
+        cp $SIGNER_DIR/updates/keys/* $SIGNER_DIR/private/$NOW
+        echo "Keys have been saved to $SIGNER_DIR/private/$NOW please secure them"
+    fi;
+}
+
+function cleanupdocker() {
+    if [ "$(ls -A $SIGNER_DIR/updates/keys)" ]; then
+        echo "Cleaning Keys..."
+        rm $SIGNER_DIR/updates/keys/*
+    fi;
+}
 
 echo "=> Reading local git environment"
 GIT_USER_NAME=$(git config user.name)
@@ -92,11 +127,12 @@ echo ""
 echo "Maintenance Actions:"
 echo " 7 update-timestamp"
 echo " 8 bash"
-echo " 9 DEBUG Shell"
+echo " 9 clean docker environment"
+echo " 10 DEBUG Shell"
 echo ""
 localread "Action to be passed to TUF:" "" TUF_PARAMS
 
-declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-key [5]=sign-key [6]=commit-key [7]=update-timestamp [8]=bash [9]=DEBUG)
+declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-key [5]=sign-key [6]=commit-key [7]=update-timestamp [8]=bash [9]=clean-docker [10]=DEBUG)
 
 for key in "${!TUF_ACTIONS[@]}"; do
   if [ "$key" == "$TUF_PARAMS" ]; then
@@ -106,7 +142,6 @@ done
 
 # Prepare standard environment parameters for the docker iamge
 DOCKER_ENV_FILE=$(mktemp)
-echo "$DOCKER_ENV_FILE";
 echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $DOCKER_ENV_FILE
 echo "GIT_BASE_BRANCH_NAME=${GIT_BASE_BRANCH_NAME}" >> $DOCKER_ENV_FILE
 echo "GIT_TARGET_BRANCH_NAME=${GIT_TARGET_BRANCH_NAME}" >> $DOCKER_ENV_FILE
@@ -121,10 +156,12 @@ echo "TUF_PARAMETERS=${TUF_PARAMETERS}" >> $DOCKER_ENV_FILE
 echo "=> Run TUF process"
 
 if [[ $TUF_PARAMS = "bash" ]]; then
+    loadkeys
     docker run --rm -ti \
         --env-file "$DOCKER_ENV_FILE" \
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
+    cleanupdocker
 elif [[ $TUF_PARAMS = "DEBUG" ]]; then
     echo '=> Starting Shell Only for debugging'
     docker run --rm -ti \
@@ -154,29 +191,63 @@ elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = 
     echo "=> Create a signature"
     if [[ $TUF_PARAMS = "create-key" ]]; then
       localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
-      localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
+#      localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
     else
+      loadkeys
+      checkkey "root"
+      #localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
       SIGNATURE_ROLE="root"
     fi
-    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=key\/${GIT_BASE_BRANCH_NAME}\/${SIGNATURE_ROLE}/g" "$DOCKER_ENV_FILE"
+    localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
+    SIGNATURE_BRANCH=`echo ${SIGNATURE_ROLE_NAME} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g'`
+
+    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=key\/${GIT_BASE_BRANCH_NAME}\/${SIGNATURE_BRANCH}/g" "$DOCKER_ENV_FILE"
     docker run --rm -ti \
         --env-file "$DOCKER_ENV_FILE" \
         -e SIGNATURE_ROLE="${SIGNATURE_ROLE}"\
         -e SIGNATURE_ROLE_NAME="${SIGNATURE_ROLE_NAME}"\
         -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} \
         "${TUF_PARAMS}"
+    if [[ $TUF_PARAMS = "create-key" ]]; then
+      savekeys
+    else
+      cleanupdocker
+    fi
 elif [[ $TUF_PARAMS = "sign-release" ]]; then
   localread "Please enter which Version you would like to sign:" "" UPDATE_VERSION
   sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
+  loadkeys
+  checkkey "targets"
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
     -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
+  cleanupdocker
 elif [[ $TUF_PARAMS = "release" ]]; then
   localread "Please enter which Version you would like to release:" "" UPDATE_VERSION
   sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
+  loadkeys
+  checkkey "snapshot"
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
     -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
+  cleanupdocker
+elif [[ $TUF_PARAMS = "update-timestamp" ]]; then
+  loadkeys
+  checkkey "timestamp"
+  docker run --rm \
+    --env-file "$DOCKER_ENV_FILE" \
+    -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
+  cleanupdocker
+elif [[ $TUF_PARAMS = "clean-docker" ]]; then
+  if [ ! -d "$SIGNER_DIR/updates/.git" ]; then
+    echo "Error $SIGNER_DIR/updates/.git doesn't exists."
+    exit 1
+  fi
+  rm -rf "$SIGNER_DIR/updates"
+  mkdir "$SIGNER_DIR/updates"
+  docker run --rm \
+    --env-file "$DOCKER_ENV_FILE" \
+    -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "bash"
 else
     docker run --rm \
         --env-file "$DOCKER_ENV_FILE" \

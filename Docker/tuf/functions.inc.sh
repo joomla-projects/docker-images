@@ -20,6 +20,7 @@ function L_github_login() {
 function L_github_create_and_merge_pr() {
   PR_URL=$($GH pr create --base ${GIT_BASE_BRANCH_NAME} --title "$1" --body "$1")
   $GH pr merge --merge "${PR_URL}"
+  $GIT push origin --delete ${GIT_TARGET_BRANCH_NAME}
 }
 
 function L_git_configure() {
@@ -41,12 +42,15 @@ function L_git_update() {
   $GIT fetch origin
 
   if [ "$($GIT show-branch ${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" == "" ]; then
+    echo "=> Checkout existing branch ${GIT_TARGET_BRANCH_NAME}"
     $GIT checkout ${GIT_TARGET_BRANCH_NAME}
   else
+    echo "=> Create new branch ${GIT_TARGET_BRANCH_NAME}"
     $GIT checkout -b ${GIT_TARGET_BRANCH_NAME}
   fi
 
   if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" == "" ]; then
+    echo "=> Set upstream origin for branch ${GIT_TARGET_BRANCH_NAME} to origin/${GIT_TARGET_BRANCH_NAME}"
     $GIT branch --set-upstream-to=origin/${GIT_TARGET_BRANCH_NAME} ${GIT_TARGET_BRANCH_NAME}
     $GIT pull
   fi

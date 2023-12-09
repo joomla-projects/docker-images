@@ -1,5 +1,10 @@
+# Ignore bitwarden binary
+tools/bw
 updates/
-.env
-.vscode/
-*.code-workspace
 release/*
+.env
+/private/root.json
+/private/snapshot.json
+/private/targets.json
+/private/timestamp.json
+/.idea/codeStyles/codeStyleConfig.xml

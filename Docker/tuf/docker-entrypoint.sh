@@ -19,6 +19,15 @@ L_git_configure
 if [[ ! -d .git ]]; then
   echo "=> Initially checkout repository"
   L_git_init
+  mkdir keys || exit 0
+  mkdir staged || exit 0
+fi
+
+if [[ "$1" = "sign-release" || "$1" = "release" || "$1" = "sign-key" || "$1" = "commit-key" ]]; then
+  if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" != "" ]; then
+    echo "Branch ${GIT_TARGET_BRANCH_NAME} doesn't exists. Aborting..."
+    exit 1
+  fi
 fi
 
 echo "=> Update repository version"
@@ -35,7 +44,11 @@ case "$1" in
       L_git_add_and_commit "Update timestamp"
       ;;
   "prepare-release")
-      sed "s/\$VERSION/${UPDATE_VERSION}/g" $basedir/templates/update-info-$(cut -d '.' -f 1 <<< "$UPDATE_VERSION").json | tee /tmp/update-info.json
+      if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" == "" ]; then
+        echo "Version branch ${GIT_TARGET_BRANCH_NAME} already exists. Aborting..."
+        exit 1
+      fi
+      sed -e "s/\$VERSION/${UPDATE_VERSION}/g" -e "s/\$DASHVERSION/${UPDATE_VERSION//./-}/g" $basedir/templates/update-info-$(cut -d '.' -f 1 <<< "$UPDATE_VERSION").json | tee /tmp/update-info.json
       cat <<< $(jq '.["description"] = "'"${UPDATE_DESCRIPTION}"'"' /tmp/update-info.json) > /tmp/update-info.json
       cat <<< $(jq '.["infourl"]["url"] = "'"${UPDATE_INFO_URL}"'"' /tmp/update-info.json) > /tmp/update-info.json
       cat <<< $(jq '.["infourl"]["title"] = "'"${UPDATE_INFO_TITLE}"'"' /tmp/update-info.json) > /tmp/update-info.json
@@ -47,6 +60,7 @@ case "$1" in
   "sign-release")
       $TUF sign targets.json
       L_git_add_and_commit "Sign Release ${GIT_TARGET_BRANCH_NAME}"
+      rm -rf staged/*
       ;;
   "release")
       $TUF snapshot
@@ -54,6 +68,11 @@ case "$1" in
       L_github_create_and_merge_pr "Release: ${GIT_TARGET_BRANCH_NAME}"
       ;;
   "create-key")
+      if [ "$(ls -A staged)" != "" ]; then
+        echo "Error: stage is not empty aborting"
+        exit 1
+      fi
+
       tmpfile=$(mktemp)
       $TUF gen-key --expires=548 ${SIGNATURE_ROLE} | tee $tmpfile
       keyid=$(cat $tmpfile | awk '{print $6}')
@@ -83,6 +102,9 @@ case "$1" in
       $TUF snapshot
       L_git_add_and_commit "Add signature key"
       L_github_create_and_merge_pr "Add signature key"
+      ;;
+  "noop")
+      exit 0
       ;;
   *)
       $TUF "$1"
