@@ -60,7 +60,6 @@ case "$1" in
   "sign-release")
       $TUF sign targets.json
       L_git_add_and_commit "Sign Release ${GIT_TARGET_BRANCH_NAME}"
-      rm -rf staged/*
       ;;
   "release")
       $TUF snapshot
