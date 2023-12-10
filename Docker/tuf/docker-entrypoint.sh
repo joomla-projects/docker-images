@@ -21,6 +21,8 @@ if [[ ! -d .git ]]; then
   L_git_init
   mkdir keys || exit 0
   mkdir staged || exit 0
+else
+  $GIT fetch origin
 fi
 
 if [[ "$1" = "sign-release" || "$1" = "release" || "$1" = "sign-key" || "$1" = "commit-key" ]]; then
