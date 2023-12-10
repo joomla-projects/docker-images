@@ -3,10 +3,9 @@
 SIGNER_DIR="$(dirname "$(readlink -f "$0")")"
 
 DOCKER_IMAGE="joomlaprojects/docker-images:updater"
-DOCKER_IMAGE="joomla-tuf:latest"
 
 GIT_BASE_BRANCH_NAME=main
-GIT_TARGET_BRANCH_NAME=next
+GIT_TARGET_BRANCH_NAME=${GIT_BASE_BRANCH_NAME}
 
 TUF_TARGETS_PASSPHRASE=""
 TUF_TIMESTAMP_PASSPHRASE=""
@@ -58,7 +57,7 @@ function checkReleaseFolder() {
 
 function loadkeys() {
     mkdir -p $SIGNER_DIR/updates/keys
-    $($SIGNER_DIR/tools/keys_$KEYADAPTER.sh)
+    $($SIGNER_DIR/tools/keys_${KEY_ADAPTER}.sh)
 }
 
 function checkkey() {
