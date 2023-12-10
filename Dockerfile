@@ -15,7 +15,7 @@ ENV TUF_VERSION=6ad7fe593e4042db3544c4b0fedbe66bac371c42 \
 
 RUN echo "=> Running apt-get update" && \
     apt-get update && \
-    apt-get install git jq -y && \
+    apt-get install git jq php-cli -y && \
     echo "=> Install Github CLI" && \
     wget -O github-cli.deb https://github.com/cli/cli/releases/download/v${GITHUB_CLI_VERSION}/gh_${GITHUB_CLI_VERSION}_linux_amd64.deb && \
     dpkg -i github-cli.deb && \
