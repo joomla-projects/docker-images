@@ -41,7 +41,7 @@ function L_git_init() {
 function L_git_update() {
   $GIT fetch origin
 
-  if [ "$($GIT show-branch ${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" == "" ]; then
+  if [ "$($GIT show-branch ${GIT_TARGET_BRANCH_NAME} >/dev/null 2>&1 || echo $?)" == "" ]; then
     echo "=> Checkout existing branch ${GIT_TARGET_BRANCH_NAME}"
     $GIT checkout ${GIT_TARGET_BRANCH_NAME}
   else
@@ -49,7 +49,7 @@ function L_git_update() {
     $GIT checkout -b ${GIT_TARGET_BRANCH_NAME}
   fi
 
-  if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" == "" ]; then
+  if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null 2>&1 || echo $?)" == "" ]; then
     echo "=> Set upstream origin for branch ${GIT_TARGET_BRANCH_NAME} to origin/${GIT_TARGET_BRANCH_NAME}"
     $GIT branch --set-upstream-to=origin/${GIT_TARGET_BRANCH_NAME} ${GIT_TARGET_BRANCH_NAME}
     $GIT pull

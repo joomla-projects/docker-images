@@ -24,7 +24,7 @@ if [[ ! -d .git ]]; then
 fi
 
 if [[ "$1" = "sign-release" || "$1" = "release" || "$1" = "sign-key" || "$1" = "commit-key" ]]; then
-  if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" != "" ]; then
+  if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null 2>&1 || echo $?)" != "" ]; then
     echo "Branch ${GIT_TARGET_BRANCH_NAME} doesn't exists. Aborting..."
     exit 1
   fi
@@ -44,7 +44,7 @@ case "$1" in
       L_git_add_and_commit "Update timestamp"
       ;;
   "prepare-release")
-      if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null || echo $?)" == "" ]; then
+      if [ "$($GIT show-branch origin/${GIT_TARGET_BRANCH_NAME} >/dev/null 2>&1 || echo $?)" == "" ]; then
         echo "Version branch ${GIT_TARGET_BRANCH_NAME} already exists. Aborting..."
         exit 1
       fi
