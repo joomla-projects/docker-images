@@ -1,10 +1,10 @@
-FROM golang:1.20-bookworm@sha256:fd8d0f8f05c0254d80cfb040e2c6351e477593b7dbf24b0d495ba1e97aa14146
+FROM golang:1.21.5-bookworm@sha256:4e2551bdfcc449e1363284ddba11e89607d88e915674b6f654a7a5bf47a83200
 
 ARG UID=1000 \
     GID=1000
 
-# v0.5.2
-ENV TUF_VERSION=91c85a09b56850c90201fa919efac8433bf4f907 \
+# v0.7.0
+ENV TUF_VERSION=6ad7fe593e4042db3544c4b0fedbe66bac371c42 \
     GIT_URL=https://github.com/joomla/updates.git \
     GITHUB_CLI_VERSION=2.31.0 \
     GIT_ASKPASS=/tuf/git_env_password.sh \
