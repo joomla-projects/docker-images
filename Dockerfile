@@ -6,7 +6,7 @@ ARG UID=1000 \
 # v0.7.0
 ENV TUF_VERSION=6ad7fe593e4042db3544c4b0fedbe66bac371c42 \
     GIT_URL=https://github.com/joomla/updates.git \
-    GITHUB_CLI_VERSION=2.31.0 \
+    GITHUB_CLI_VERSION=2.40.0 \
     GIT_ASKPASS=/tuf/git_env_password.sh \
     eUID=$UID \
     eGID=$GID \
