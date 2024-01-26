@@ -18,7 +18,7 @@ L_git_configure
 # repository we create a new one and pull the upstream repository
 if [[ ! -d .git ]]; then
   echo "=> Initially checkout repository"
-  L_git_init
+  L_git_initupdates
   mkdir keys || exit 0
   mkdir staged || exit 0
 else
@@ -35,13 +35,15 @@ fi
 echo "=> Update repository version"
 L_git_update
 
+. /go/config.env
+
 case "$1" in
   "bash")
       /bin/bash
       ;;
   "update-timestamp")
       echo "=> TUF Updation timestamp"
-      $TUF timestamp
+      $TUF timestamp --expires=${TUF_EXPIRE_TIMESTAMP}
       $TUF commit
       L_git_add_and_commit "Update timestamp"
       ;;
@@ -75,7 +77,7 @@ case "$1" in
       fi
 
       tmpfile=$(mktemp)
-      $TUF gen-key --expires=548 ${SIGNATURE_ROLE} | tee $tmpfile
+      $TUF gen-key --expires=${TUF_EXPIRE_KEY} ${SIGNATURE_ROLE} | tee $tmpfile
       keyid=$(cat $tmpfile | awk '{print $6}')
 
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
@@ -100,7 +102,7 @@ case "$1" in
       jq -s add staged/${SIGNATURE_ROLE}.json.sigs.* > staged/${SIGNATURE_ROLE}.json.sigs
       $TUF add-signatures --signatures staged/${SIGNATURE_ROLE}.json.sigs ${SIGNATURE_ROLE}.json
       rm staged/${SIGNATURE_ROLE}.json.*
-      $TUF snapshot
+      $TUF snapshot --expires=${TUF_EXPIRE_SNAPSHOT}
       L_git_add_and_commit "Add signature key"
       L_github_create_and_merge_pr "Add signature key"
       ;;
