@@ -2,6 +2,9 @@
 tools/bw
 # watchdog
 tools/watchdog/vendor
+tools/watchdog/metadata/snapshot.json
+tools/watchdog/metadata/targets.json
+tools/watchdog/metadata/timestamp.json
 updates/
 release/*
 .env
