@@ -4,7 +4,6 @@ use GuzzleHttp\Promise\Create;
 use GuzzleHttp\Promise\PromiseInterface;
 use Joomla\Http\HttpFactory;
 use Tuf\Client\DurableStorage\FileStorage;
-use Tuf\Client\SignatureVerifier;
 use Tuf\Client\Updater;
 use Tuf\Exception\RepoFileNotFound;
 use Tuf\Loader\LoaderInterface;
@@ -156,6 +155,7 @@ $updater = new Updater($sizeCheckingLoader, $storage);
 
 $now = new DateTimeImmutable();
 
+// Only for testing
 // $now = new DateTime('now');
 // $now->modify('+ 5 years');
 
