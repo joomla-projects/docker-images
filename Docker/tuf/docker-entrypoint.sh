@@ -78,18 +78,26 @@ case "$1" in
 
       tmpfile=$(mktemp)
       $TUF gen-key --expires=${TUF_EXPIRE_KEY} ${SIGNATURE_ROLE} | tee $tmpfile
-      keyid=$(cat $tmpfile | awk '{print $6}')
+      keyid=$(cat $tmpfile | awk '{print $7}')
 
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json
 
-      jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
-      mv $tmpfile metadata/keys.json
+# I think it's not needed if needed it needs a comment why
+#     jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
+#      mv $tmpfile metadata/keys.json
 
       if [ "${SIGNATURE_ROLE}" == "root" ] || [ "${SIGNATURE_ROLE}" == "targets"  ]; then
         jq ".signed.roles.snapshot.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
         mv $tmpfile staged/root.json
       fi
+
+      # Extract the public key
+      publicKey=$(cat staged/root.json | jq -r '.signed.keys."'${keyid}'".keyval.public')
+
+      cat staged/root.json | jq -r '.signed.keys."${keyid}".keyval.public'
+
+      $KEYTOOL add --keyId="${keyid}" --role="${SIGNATURE_ROLE}" --name="${SIGNATURE_ROLE_NAME}" --public-key="${publicKey}"
 
       $TUF payload root.json > staged/root.json.payload
       L_git_add_and_commit "Prepare key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"

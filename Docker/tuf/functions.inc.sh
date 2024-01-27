@@ -3,6 +3,7 @@
 TUF="/tuf/bin/tuf${TUF_PARAMETERS}"
 GIT="/usr/bin/git"
 GH="/usr/bin/gh"
+KEYTOOL="/usr/bin/php /tuf/key.php"
 
 function prettyJson() {
     # make all *.json files pretty
