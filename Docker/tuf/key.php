@@ -163,6 +163,7 @@ function renderList($data)
     }
 
     foreach($data as $row) {
+        $row['role'] = implode(',', $row['role']);
         echo str_replace('\n', "\n", str_replace(array_keys($row), array_values($row), $format));
     }
 }
@@ -181,16 +182,20 @@ switch ($task) {
         }
 
         if (!empty($storage[$keyId])) {
-            output('Key already exists');
-            die(1);
-        }
+            if (in_array($role, $storage[$keyId]['role'])) {
+                output('Key already exists');
+                die(1);
+            }
 
-        $storage[$keyId] = [
-            'keyId' => $keyId,
-            'name' => $name,
-            'role' => $role,
-            'publicKey' => $publicKey,
-        ];
+            $storage[$keyId]['role'][] = $role;
+        } else {
+            $storage[$keyId] = [
+                'keyId' => $keyId,
+                'name' => $name,
+                'role' => [$role],
+                'publicKey' => $publicKey,
+            ];
+        }
 
         saveDatabase($storage);
 
@@ -206,7 +211,18 @@ switch ($task) {
             die(1);
         }
 
-        unset($storage[$keyId]);
+        if (isset($role)) {
+            foreach ($storage[$keyId]['role'] as $k => $v) {
+                if (stripos($v, $role) !== false) {
+                    unset($storage[$keyId]['role'][$k]);
+                }
+            }
+            if (empty($storage[$keyId]['role'])) {
+                unset($storage[$keyId]);
+            }
+        } else {
+            unset($storage[$keyId]);
+        }
 
         saveDatabase($storage);
 

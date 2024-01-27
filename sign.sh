@@ -114,24 +114,27 @@ echo ""
 echo "Supported actions"
 echo ""
 echo "Release Actions:"
-echo " 1 prepare-release"
-echo " 2 sign-release"
-echo " 3 release"
+echo " r1 prepare-release"
+echo " r2 sign-release"
+echo " r3 release"
 echo ""
 echo "Signature Actions:"
-echo " 4 create-key"
-echo " 5 sign-key"
-echo " 6 commit-key"
+echo " k1 create-key"
+echo " k2 remove-key"
+echo " k3 sign-keys"
+echo " k4 commit-keys"
 echo ""
 echo "Maintenance Actions:"
-echo " 7 update-timestamp"
-echo " 8 bash"
-echo " 9 clean docker environment"
-echo " 10 DEBUG Shell"
+echo " m1 update-timestamp"
+echo " m2 bash"
+echo " m3 clean docker environment"
+echo " m4 DEBUG Shell"
+echo ""
+echo "q Exit"
 echo ""
 localread "Action to be passed to TUF:" "" TUF_PARAMS
 
-declare -A TUF_ACTIONS=( [1]=prepare-release [2]=sign-release [3]=release [4]=create-key [5]=sign-key [6]=commit-key [7]=update-timestamp [8]=bash [9]=clean-docker [10]=DEBUG)
+declare -A TUF_ACTIONS=( [r1]=prepare-release [r2]=sign-release [r3]=release [k1]=create-key [k2]=remove-key [k3]=sign-keys [k4]=commit-keys [m1]=update-timestamp [m2]=bash [m3]=clean-docker [m4]=DEBUG [q]=quit)
 
 for key in "${!TUF_ACTIONS[@]}"; do
   if [ "$key" == "$TUF_PARAMS" ]; then
@@ -152,7 +155,11 @@ echo "TUF_SNAPSHOT_PASSPHRASE=${TUF_SNAPSHOT_PASSPHRASE}" >> $DOCKER_ENV_FILE
 echo "TUF_ROOT_PASSPHRASE=${TUF_ROOT_PASSPHRASE}" >> $DOCKER_ENV_FILE
 echo "TUF_PARAMETERS=${TUF_PARAMETERS}" >> $DOCKER_ENV_FILE
 
-echo "=> Run TUF process"
+if [[ $TUF_PARAMS = "quit" ]]; then
+  echo "=> Exit"
+  exit 0
+fi
+
 
 if [[ $TUF_PARAMS = "bash" ]]; then
     loadkeys
@@ -186,17 +193,30 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
         -e UPDATE_INFO_TITLE="${UPDATE_INFO_TITLE}"\
         -v "$(pwd)/updates:/go" "${DOCKER_IMAGE}" \
         "${TUF_PARAMS}"
-elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "sign-key" || $TUF_PARAMS = "commit-key" ]]; then
-    echo "=> Create a signature"
-    if [[ $TUF_PARAMS = "create-key" ]]; then
+elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "remove-key" || $TUF_PARAMS = "sign-keys" || $TUF_PARAMS = "commit-keys" ]]; then
+    case "$TUF_PARAMS" in
+      "create-key")
+        echo "=> Create a key"
+        ;;
+      "remove-key")
+        echo "=> Remove a key"
+        ;;
+      "sign-keys")
+        echo "=> Sign keys"
+        ;;
+      "commit-keys")
+        echo "=> Commit keys"
+        ;;
+    esac
+
+    if [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "remove-key" ]]; then
       localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
-#      localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
     else
       loadkeys
       checkkey "root"
-      #localread "Please enter the Role (root, targets, snapshot, timestamp):" "" SIGNATURE_ROLE
       SIGNATURE_ROLE="root"
     fi
+
     localread "Please enter the Name (Person) the key belongs to:" "" SIGNATURE_ROLE_NAME
     SIGNATURE_BRANCH=`echo ${SIGNATURE_ROLE_NAME} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g'`
 
@@ -246,11 +266,7 @@ elif [[ $TUF_PARAMS = "clean-docker" ]]; then
   mkdir "$SIGNER_DIR/updates"
   docker run --rm \
     --env-file "$DOCKER_ENV_FILE" \
-    -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "bash"
-else
-    docker run --rm \
-        --env-file "$DOCKER_ENV_FILE" \
-        -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
+    -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "clean-git"
 fi
 
 # Cleanup temp file

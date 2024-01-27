@@ -102,17 +102,39 @@ case "$1" in
       $TUF payload root.json > staged/root.json.payload
       L_git_add_and_commit "Prepare key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"
       ;;
-  "sign-key")
+  "remove-key")
+      if [ "$(ls -A staged)" != "" ]; then
+        echo "Error: stage is not empty aborting"
+        exit 1
+      fi
+
+      tmpfile=$(mktemp)
+
+      keyid=$($KEYTOOL list --name="${SIGNATURE_ROLE_NAME}" --format="keyId")
+
+      $TUF revoke-key --expires=${TUF_EXPIRE_KEY} ${SIGNATURE_ROLE} ${keyid}
+
+      $KEYTOOL remove --keyId="${keyid}" --role="${SIGNATURE_ROLE}"
+
+      $TUF payload root.json > staged/root.json.payload
+      L_git_add_and_commit "Prepare removal of key for Role ${SIGNATURE_ROLE} by ${SIGNATURE_ROLE_NAME}"
+      ;;
+  "sign-keys")
       $TUF sign-payload --role=${SIGNATURE_ROLE} staged/${SIGNATURE_ROLE}.json.payload > staged/${SIGNATURE_ROLE}.json.sigs.$RANDOM
       L_git_add_and_commit "Signed signature key"
       ;;
-  "commit-key")
+  "commit-keys")
       jq -s add staged/${SIGNATURE_ROLE}.json.sigs.* > staged/${SIGNATURE_ROLE}.json.sigs
       $TUF add-signatures --signatures staged/${SIGNATURE_ROLE}.json.sigs ${SIGNATURE_ROLE}.json
       rm staged/${SIGNATURE_ROLE}.json.*
       $TUF snapshot --expires=${TUF_EXPIRE_SNAPSHOT}
       L_git_add_and_commit "Add signature key"
       L_github_create_and_merge_pr "Add signature key"
+      ;;
+  "clean-git")
+      echo "=> Remove all local branches which don't exists on upstream"
+      git fetch --prune && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -d
+      echo "=> Repo clean"
       ;;
   "noop")
       exit 0
