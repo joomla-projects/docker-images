@@ -18,7 +18,7 @@ L_git_configure
 # repository we create a new one and pull the upstream repository
 if [[ ! -d .git ]]; then
   echo "=> Initially checkout repository"
-  L_git_initupdates
+  L_git_init
   mkdir keys || exit 0
   mkdir staged || exit 0
 else
