@@ -1,5 +1,7 @@
 # Ignore bitwarden binary
 tools/bw
+# watchdog
+tools/watchdog/vendor
 updates/
 release/*
 .env
