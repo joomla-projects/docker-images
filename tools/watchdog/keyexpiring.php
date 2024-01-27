@@ -19,6 +19,14 @@ $config = [
     'path' => __DIR__ . '/metadata',
 ];
 
+// Limits when emails should be send out
+$expireLimits = [
+    'root'      => 30, // 30 days
+    'snapshot'  => 30, // 30 days
+    'targets'   => 30, // 30 days
+    'timestamp' => 2,  // 2 days
+];
+
 $apiElasticKey = getenv('ELASTIC_EMAIL_KEY');
 
 $notifier = new class($apiElasticKey)
@@ -146,8 +154,35 @@ $storage->delete('targets');
 
 $updater = new Updater($sizeCheckingLoader, $storage);
 
+$now = new DateTimeImmutable();
+
+// $now = new DateTime('now');
+// $now->modify('+ 5 years');
+
 try {
     $updater->refresh(true);
+
+    // Check if one metadata expires soon
+    foreach ($expireLimits as $metadata => $limit) {
+
+        $method = 'get' . ucfirst($metadata);
+
+        if (!is_callable([$storage, $method])) {
+            throw new Exception('Something fundamental broke, please restart the system!');
+        }
+
+        $json = $storage->$method();
+
+        $expires = $json->getExpires();
+
+        $newdiff = $expires->modify('-' . $limit . ' days');
+
+        if ($newdiff > $now) {
+            continue;
+        }
+
+        throw new Exception('The "' . $metadata . '" metadata expires soon! Please refresh it or you\'re screwed!');
+    }
 } catch (Exception $e) {
 
     $notifier->notify($e->getMessage() ?: 'Unknown error: ' . get_class($e));
