@@ -25,6 +25,7 @@ function L_github_create_and_merge_pr() {
 }
 
 function L_git_configure() {
+  $GIT config --global --add safe.directory /go
   $GIT config --global user.name "${GIT_USER_NAME}"
   $GIT config --global user.email "${GIT_USER_EMAIL}"
   $GIT config --global init.defaultBranch "${GIT_BASE_BRANCH_NAME}"
@@ -63,7 +64,6 @@ function L_git_update() {
 }
 
 function L_git_add_and_commit() {
-  prettyJson
   $GIT add .
   $GIT commit -m "$1"
   $GIT push -u origin ${GIT_TARGET_BRANCH_NAME}

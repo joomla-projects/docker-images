@@ -83,10 +83,6 @@ case "$1" in
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json
 
-# I think it's not needed if needed it needs a comment why
-#     jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
-#      mv $tmpfile metadata/keys.json
-
       if [ "${SIGNATURE_ROLE}" == "root" ] || [ "${SIGNATURE_ROLE}" == "targets"  ]; then
         jq ".signed.roles.snapshot.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
         mv $tmpfile staged/root.json

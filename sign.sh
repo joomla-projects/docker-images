@@ -25,7 +25,16 @@ function localread() {
 
   if [ -z "${!L_VAR}" ];
   then
-    read "-${L_ADDITIONAL}rep" "${L_LABEL} " -i "${L_DEFAULT}" "${L_VAR}"
+    # Using workaround because OSX supports only bash 3.2 which doesn't support
+    #read "-${L_ADDITIONAL}rep" "${L_LABEL} " -i "${L_DEFAULT}" "${L_VAR}"
+
+    # BASH 3.2 compatible code start
+    if read "-${L_ADDITIONAL}rep" "${L_LABEL}" "${L_VAR}" && [[ ${L_VAR} ]]; then
+      return 0
+    else
+      printf -v "${L_VAR}" %s "${L_DEFAULT}"
+    fi
+    # BASH 3.2 compatible code end
   fi
 }
 
@@ -134,13 +143,55 @@ echo "q Exit"
 echo ""
 localread "Action to be passed to TUF:" "" TUF_PARAMS
 
-declare -A TUF_ACTIONS=( [r1]=prepare-release [r2]=sign-release [r3]=release [k1]=create-key [k2]=remove-key [k3]=sign-keys [k4]=commit-keys [m1]=update-timestamp [m2]=bash [m3]=clean-docker [m4]=DEBUG [q]=quit)
+# Using switch/case workaround because OSX supports only bash 3.2 which doesn't support
+#declare -A TUF_ACTIONS=( [r1]=prepare-release [r2]=sign-release [r3]=release [k1]=create-key [k2]=remove-key [k3]=sign-keys [k4]=commit-keys [m1]=update-timestamp [m2]=bash [m3]=clean-docker [m4]=DEBUG [q]=quit)
 
-for key in "${!TUF_ACTIONS[@]}"; do
-  if [ "$key" == "$TUF_PARAMS" ]; then
-    TUF_PARAMS=${TUF_ACTIONS[$key]};
-  fi
-done
+#for key in "${!TUF_ACTIONS[@]}"; do
+#  if [ "$key" == "$TUF_PARAMS" ]; then
+#    TUF_PARAMS=${TUF_ACTIONS[$key]};
+#  fi
+#done
+
+# BASH 3.2 compatible code start
+case $TUF_PARAMS in
+  r1)
+    TUF_PARAMS="prepare-release"
+    ;;
+  r2)
+    TUF_PARAMS="sign-release"
+    ;;
+  r3)
+    TUF_PARAMS="release"
+    ;;
+  k1)
+    TUF_PARAMS="create-key"
+    ;;
+  k2)
+    TUF_PARAMS="remove-key"
+    ;;
+  k3)
+    TUF_PARAMS="sign-keys"
+    ;;
+  k4)
+    TUF_PARAMS="commit-keys"
+    ;;
+  m1)
+    TUF_PARAMS="update-timestamp"
+    ;;
+  m2)
+    TUF_PARAMS="bash"
+    ;;
+  m3)
+    TUF_PARAMS="clean-docker"
+    ;;
+  m4)
+    TUF_PARAMS="DEBUG"
+    ;;
+  q)
+    TUF_PARAMS="quit"
+    ;;
+esac
+# BASH 3.2 compatible code end
 
 # Prepare standard environment parameters for the docker iamge
 DOCKER_ENV_FILE=$(mktemp)
