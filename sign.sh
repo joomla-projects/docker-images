@@ -107,8 +107,8 @@ fi
 # localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
 # if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
 
-localread "Github Personnel Access Token:" "" ACCESS_TOKEN s
-if [ -z "${ACCESS_TOKEN}" ]; then echo "Aborting no Personnel Access Token given."; exit 1; fi
+localread "Github Personal Access Token:" "" ACCESS_TOKEN s
+if [ -z "${ACCESS_TOKEN}" ]; then echo "Aborting no Personal Access Token given."; exit 1; fi
 
 echo ""
 echo "Supported actions"
