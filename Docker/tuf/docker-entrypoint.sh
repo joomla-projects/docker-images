@@ -19,8 +19,12 @@ L_git_configure
 if [[ ! -d .git ]]; then
   echo "=> Initially checkout repository"
   L_git_init
-  mkdir keys || exit 0
-  mkdir staged || exit 0
+  if [[ ! -d keys ]]; then
+    mkdir keys
+  fi
+  if [[ ! -d staged ]]; then
+    mkdir staged
+  fi
 else
   $GIT fetch origin
 fi
