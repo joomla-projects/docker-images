@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TUF="/tuf/bin/tuf${TUF_PARAMETERS}"
+TUF="/tuf/bin/tuf${TUF_PARAMETERS:-}"
 GIT="/usr/bin/git"
 GH="/usr/bin/gh"
 KEYTOOL="/usr/bin/php /tuf/key.php"
