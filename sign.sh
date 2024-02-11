@@ -26,13 +26,21 @@ function localread() {
   if [ -z "${!L_VAR}" ];
   then
     # Using workaround because OSX supports only bash 3.2 which doesn't support
-    #read "-${L_ADDITIONAL}rep" "${L_LABEL} " -i "${L_DEFAULT}" "${L_VAR}"
-
-    # BASH 3.2 compatible code start
-    if read "-${L_ADDITIONAL}rep" "${L_LABEL}" "${L_VAR}" && [[ ${L_VAR} ]]; then
-      return 0
+    if [ "${BASH_VERSINFO:-0}" -ge 4 ];
+    then
+      read "-${L_ADDITIONAL}rep" "${L_LABEL} " -i "${L_DEFAULT}" "${L_VAR}"
     else
-      printf -v "${L_VAR}" %s "${L_DEFAULT}"
+      # BASH 3.2 compatible code start
+      if [ ! -z "${L_DEFAULT}" ];
+      then
+        L_LABEL="${L_LABEL} [${L_DEFAULT}]"
+      fi
+
+      if read "-${L_ADDITIONAL}rep" "${L_LABEL} " "${L_VAR}" && [[ ${L_VAR} ]]; then
+        return 0
+      else
+        printf -v "${L_VAR}" %s "${L_DEFAULT}"
+      fi
     fi
     # BASH 3.2 compatible code end
   fi
@@ -54,6 +62,12 @@ function checkReleaseFolder() {
     echo '=> Move file from release to updates/stage/targets'
     for file in ./release**/*.zip; do
       echo $file
+
+      # Extract Version
+      [[ ${file} =~ Joomla_([a-z0-9.-]+)-(Stable|Alpha|Beta|Release_Candidate|Development) ]]
+      echo "Version found: ${BASH_REMATCH[1]}"
+      JOOMLA_VERSION="${BASH_REMATCH[1]}"
+
       mkdir -p "updates/staged/targets/"
       #mv "$file" updates/staged/targets/
       cp "$file" updates/staged/targets/
@@ -141,7 +155,7 @@ echo " m4 DEBUG Shell"
 echo ""
 echo "q Exit"
 echo ""
-localread "Action to be passed to TUF: " "" TUF_PARAMS
+localread "Action to be passed to TUF:" "" TUF_PARAMS
 
 # Using switch/case workaround because OSX supports only bash 3.2 which doesn't support
 #declare -A TUF_ACTIONS=( [r1]=prepare-release [r2]=sign-release [r3]=release [k1]=create-key [k2]=remove-key [k3]=sign-keys [k4]=commit-keys [m1]=update-timestamp [m2]=bash [m3]=clean-docker [m4]=DEBUG [q]=quit)
@@ -228,7 +242,7 @@ elif [[ $TUF_PARAMS = "DEBUG" ]]; then
 elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     checkReleaseFolder
     echo "=> Add update files and sign them"
-    localread "Please enter the Update Version:" "" UPDATE_VERSION
+    localread "Please enter the Update Version:" "${JOOMLA_VERSION}" UPDATE_VERSION
     localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
     # INFO Url must be asked
