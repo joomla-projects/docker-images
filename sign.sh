@@ -141,7 +141,7 @@ echo " m4 DEBUG Shell"
 echo ""
 echo "q Exit"
 echo ""
-localread "Action to be passed to TUF:" "" TUF_PARAMS
+localread "Action to be passed to TUF: " "" TUF_PARAMS
 
 # Using switch/case workaround because OSX supports only bash 3.2 which doesn't support
 #declare -A TUF_ACTIONS=( [r1]=prepare-release [r2]=sign-release [r3]=release [k1]=create-key [k2]=remove-key [k3]=sign-keys [k4]=commit-keys [m1]=update-timestamp [m2]=bash [m3]=clean-docker [m4]=DEBUG [q]=quit)
