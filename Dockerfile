@@ -10,7 +10,7 @@ RUN apt-get update
 RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached-dev \
 	libwebp-dev libjpeg-dev libpq-dev libldap2-dev libmcrypt-dev libonig-dev \
 	libpng-dev libsodium-dev libsqlite3-dev libssl-dev libxpm-dev libzip-dev \
-	mariadb-client patch postgresql-client unzip wget
+	mariadb-client patch postgresql-client unzip wget gpg
 
 RUN docker-php-ext-configure gd \
 	--with-freetype \
@@ -35,21 +35,19 @@ RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-p
 	&& sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-development \
 	&& cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-	&& php -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSERSIG') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-	&& php composer-setup.php \
-	&& php -r "unlink('composer-setup.php');" \
-	&& mv composer.phar /usr/local/bin/composer
-ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
+RUN wget -O phive.phar https://phar.io/releases/phive.phar \
+    && wget -O phive.phar.asc https://phar.io/releases/phive.phar.asc \
+    && gpg --keyserver hkps://keys.openpgp.org --recv-keys 0x9D8A98B29B2D5D79 \
+    && gpg --verify phive.phar.asc phive.phar \
+    && chmod +x phive.phar \
+    && mv phive.phar /usr/local/bin/phive
 
-RUN cd /usr/local/bin \
-	&& wget -O phpunit --no-check-certificate https://phar.phpunit.de/phpunit-9.phar \
-	&& chmod +x phpunit
-
-RUN cd /usr/local/bin \
-	&& wget -O phpcpd --no-check-certificate https://phar.phpunit.de/phpcpd.phar \
-	&& chmod +x phpcpd
-
-RUN cd /usr/local/bin \
-	&& wget -O phploc --no-check-certificate https://phar.phpunit.de/phploc.phar \
-	&& chmod +x phploc
+RUN phive install --target /usr/local/bin --copy --trust-gpg-keys 95DE904AB800754A11D80B605E6DDE998AB73B8E phpcs \
+    && phive install --target /usr/local/bin --copy --trust-gpg-keys 95DE904AB800754A11D80B605E6DDE998AB73B8E phpcbf \
+	&& phive install --target /usr/local/bin --copy --trust-gpg-keys D8406D0D82947747293778314AA394086372C20A phpunit \
+    && phive install --target /usr/local/bin --copy --trust-gpg-keys D8406D0D82947747293778314AA394086372C20A phpcpd \
+    && phive install --target /usr/local/bin --copy --trust-gpg-keys D8406D0D82947747293778314AA394086372C20A phploc \
+    && phive install --target /usr/local/bin --copy --trust-gpg-keys A618F385C2FC002969A89FBE8101FB57DD8130F0 phan \
+    && phive install --target /usr/local/bin --copy --trust-gpg-keys BBAB5DF0A0D6672989CF1869E82B2FB314E9906E php-cs-fixer \
+    && phive install --target /usr/local/bin --copy --trust-gpg-keys 161DFBE342889F01DDAC4E61CBB3D576F2A0946F composer \
+	&& phive install --target /usr/local/bin --copy --trust-gpg-keys E7A745102ECC980F7338B3079093F8B32E4815AA phpmd
