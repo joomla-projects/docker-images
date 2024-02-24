@@ -70,7 +70,7 @@ case "$1" in
       L_git_add_and_commit "Sign Release ${GIT_TARGET_BRANCH_NAME}"
       ;;
   "release")
-      $TUF snapshot
+      $TUF snapshot --expires=${TUF_EXPIRE_SNAPSHOT}
       L_git_add_and_commit "Release: ${GIT_TARGET_BRANCH_NAME}"
       L_github_create_and_merge_pr "Release: ${GIT_TARGET_BRANCH_NAME}"
       ;;
