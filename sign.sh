@@ -67,7 +67,7 @@ function checkReleaseFolder() {
       [[ ${file} =~ Joomla_([a-z0-9.-]+)-(Stable|Alpha|Beta|Release_Candidate|Development) ]]
       echo "Version found: ${BASH_REMATCH[1]}"
       JOOMLA_VERSION="${BASH_REMATCH[1]}"
-
+      JOOMLA_STABILITY="${BASH_REMATCH[2]}"
       mkdir -p "updates/staged/targets/"
       #mv "$file" updates/staged/targets/
       cp "$file" updates/staged/targets/
@@ -243,8 +243,10 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     checkReleaseFolder
     echo "=> Add update files and sign them"
     localread "Please enter the Update Version:" "${JOOMLA_VERSION}" UPDATE_VERSION
+    localread "Please enter the Stability:" "${JOOMLA_STABILITY}" UPDATE_STABILITY
     localread "Please enter the Update Name:" "Joomla! ${UPDATE_VERSION}" UPDATE_NAME
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
+
     # INFO Url must be asked
     localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
     localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
@@ -254,6 +256,7 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
         -e UPDATE_NAME="${UPDATE_NAME}"\
         -e UPDATE_DESCRIPTION="${UPDATE_DESCRIPTION}"\
         -e UPDATE_VERSION="${UPDATE_VERSION}"\
+        -e UPDATE_STABILITY="${UPDATE_STABILITY}"\
         -e UPDATE_INFO_URL="${UPDATE_INFO_URL}"\
         -e UPDATE_INFO_TITLE="${UPDATE_INFO_TITLE}"\
         -v "$(pwd)/updates:/go" "${DOCKER_IMAGE}" \
