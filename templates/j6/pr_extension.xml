@@ -36,6 +36,6 @@
     <php_minimum>8.1.0</php_minimum>
     <maintainer>Joomla! Production Department</maintainer>
     <maintainerurl>https://www.joomla.org</maintainerurl>
-    <targetplatform name="joomla" version="6.[0]" />
+    <targetplatform name="joomla" version="6.[01234]" />
   </update>
 </updates>

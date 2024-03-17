@@ -1,4 +1,8 @@
 <extensionset name="Joomla! %JOOMLAVERSION% PR %PRID% Build" description="Joomla! %JOOMLAVERSION% PR %PRID% Build">
   <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="5.2" detailsurl="%PRUPDATEEXTENSIONURL%" />
   <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="6.0" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="6.1" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="6.2" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="6.3" detailsurl="%PRUPDATEEXTENSIONURL%" />
+  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="6.4" detailsurl="%PRUPDATEEXTENSIONURL%" />
 </extensionset>
