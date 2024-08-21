@@ -1,3 +1,0 @@
-<extensionset name="Joomla! %JOOMLAVERSION% PR %PRID% Build" description="Joomla! %JOOMLAVERSION% PR %PRID% Build">
-  <extension name="Joomla" element="joomla" type="file" version="%PRVERSIONSTRING%" targetplatformversion="3.10" detailsurl="%PRUPDATEEXTENSIONURL%" />
-</extensionset>

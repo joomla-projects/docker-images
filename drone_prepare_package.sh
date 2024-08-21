@@ -7,6 +7,7 @@ echo "Current directory: "$(pwd)
 
 current_directory=$(pwd)
 
+MAJORVERSION=`php -r 'const _JEXEC=true; const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::MAJOR_VERSION;'`
 EXTRAVERSION=`php -r 'const _JEXEC=true; const JPATH_PLATFORM=true; require("libraries/src/Version.php"); echo \Joomla\CMS\Version::EXTRA_VERSION;'`
 EXTRAVERSION="${EXTRAVERSION}+pr.${DRONE_PULL_REQUEST}"
 
@@ -81,7 +82,7 @@ template=${template//%currentyear%/"`date +%Y`"}
 
 echo $template > ./upload/index.html
 
-template=$(</build_templates/${DRONE_COMMIT_BRANCH}/pr_list.xml)
+template=$(</build_templates/j${MAJORVERSION}/pr_list.xml)
 
 template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
@@ -101,7 +102,7 @@ template=${template//%PRUPDATEEXTENSIONURL%/"${PRUPDATEEXTENSIONURL}"}
 
 echo $template > ./upload/pr_list.xml
 
-template=$(</build_templates/${DRONE_COMMIT_BRANCH}/pr_extension.xml)
+template=$(</build_templates/j${MAJORVERSION}/pr_extension.xml)
 
 template=${template//%PRGITHUBURL%/"${PRGITHUBURL}"}
 template=${template//%PRISSUESURL%/"https://issues.joomla.org/tracker/joomla-cms/%PRID%"}
