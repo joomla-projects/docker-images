@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.4.0beta3-apache
 
 LABEL authors="Hannes Papenberg, Harald Leithner"
 
