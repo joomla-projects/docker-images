@@ -101,13 +101,15 @@ case "$1" in
       jq ". + {\"${keyid}\":\"${SIGNATURE_ROLE_NAME}\"}" < metadata/keys.json > $tmpfile
       mv $tmpfile metadata/keys.json
 
+      # Extract the public key
+      publicKey=$(cat staged/root.json | jq -r '.signed.keys."'${keyid}'".keyval.public')
+
       if [ "${SIGNATURE_ROLE}" == "root" ] || [ "${SIGNATURE_ROLE}" == "targets"  ]; then
         jq ".signed.roles.snapshot.keyids += [\"${keyid}\"]" < staged/root.json > $tmpfile
         mv $tmpfile staged/root.json
-      fi
 
-      # Extract the public key
-      publicKey=$(cat staged/root.json | jq -r '.signed.keys."'${keyid}'".keyval.public')
+        $KEYTOOL add --keyId="${keyid}" --role="snapshot" --name="${SIGNATURE_ROLE_NAME}" --public-key="${publicKey}"
+      fi
 
       cat staged/root.json | jq -r '.signed.keys."${keyid}".keyval.public'
 
@@ -125,6 +127,14 @@ case "$1" in
       tmpfile=$(mktemp)
 
       keyid=$($KEYTOOL list --name="${SIGNATURE_ROLE_NAME}" --format="keyId")
+
+      # Automatically remove snapshot permissions when a root key or target key is revoked
+      if [ "${SIGNATURE_ROLE}" == "root" ] || [ "${SIGNATURE_ROLE}" == "targets"  ]; then
+        jq ".signed.roles.snapshot.keyids -= [\"${keyid}\"]" < repository/root.json > $tmpfile
+        mv $tmpfile staged/root.json
+
+        $KEYTOOL remove --keyId="${keyid}" --role="snapshot"
+      fi
 
       $TUF revoke-key --expires=${TUF_EXPIRE_KEY} ${SIGNATURE_ROLE} ${keyid}
 
