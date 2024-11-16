@@ -79,6 +79,26 @@ case "$1" in
       $TUF add --custom="$(jq -c '.' /tmp/update-info.json)"
       L_git_add_and_commit "Prepare ${UPDATE_VERSION}"
       ;;
+  "remove-release")
+      target_file=$(jq -r '.signed.targets | keys[] | select(contains("'"${UPDATE_VERSION}"'"))' repository/targets.json)
+
+      if [ -z "$target_file" ];
+      then
+      echo $target_file
+        echo "Update file not found in repository."
+        exit 1
+      fi
+
+      if [ "$(echo "$target_file" | wc -l)" -gt 1 ];
+      then
+        echo "Too many update files found in repository."
+        echo $target_file
+        exit 1
+      fi
+
+      $TUF remove ${target_file}
+      L_git_add_and_commit "Remove ${UPDATE_VERSION}"
+      ;;
   "sign-release")
       $TUF sign targets.json
       L_git_add_and_commit "Sign Release ${GIT_TARGET_BRANCH_NAME}"

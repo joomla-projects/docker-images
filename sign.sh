@@ -138,8 +138,9 @@ echo "Supported actions"
 echo ""
 echo "Release Actions:"
 echo " r1 prepare-release"
-echo " r2 sign-release"
-echo " r3 release"
+echo " r2 remove-release"
+echo " r3 sign-release"
+echo " r4 release"
 echo ""
 echo "Signature Actions:"
 echo " k1 create-key"
@@ -172,9 +173,12 @@ case $TUF_PARAMS in
     TUF_PARAMS="prepare-release"
     ;;
   r2)
-    TUF_PARAMS="sign-release"
+    TUF_PARAMS="remove-release"
     ;;
   r3)
+    TUF_PARAMS="sign-release"
+    ;;
+  r4)
     TUF_PARAMS="release"
     ;;
   k1)
@@ -259,6 +263,17 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
         -e UPDATE_STABILITY="${UPDATE_STABILITY}"\
         -e UPDATE_INFO_URL="${UPDATE_INFO_URL}"\
         -e UPDATE_INFO_TITLE="${UPDATE_INFO_TITLE}"\
+        -v "$(pwd)/updates:/go" "${DOCKER_IMAGE}" \
+        "${TUF_PARAMS}"
+elif [[ $TUF_PARAMS = "remove-release" ]]; then
+    echo "=> Remove update file"
+    localread "Please enter the Update Version:" "${JOOMLA_VERSION}" UPDATE_VERSION
+    localread "Please enter the Update Branch (if new release, use the new joomla version):" "${UPDATE_VERSION}" UPDATE_BRANCH
+
+    sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_BRANCH}/g" "$DOCKER_ENV_FILE"
+    docker run --rm \
+        --env-file "${DOCKER_ENV_FILE}" \
+        -e UPDATE_VERSION="${UPDATE_VERSION}"\
         -v "$(pwd)/updates:/go" "${DOCKER_IMAGE}" \
         "${TUF_PARAMS}"
 elif [[ $TUF_PARAMS = "create-key" || $TUF_PARAMS = "remove-key" || $TUF_PARAMS = "sign-keys" || $TUF_PARAMS = "commit-keys" ]]; then
