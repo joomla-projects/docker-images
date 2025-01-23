@@ -16,7 +16,7 @@ RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y mariadb-server libqtgui4
     libqt4-xml libaudio2 libgbm1 fontconfig netcat rsync
 
 # use newer NodeJS version
-RUN curl -sL deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL deb.nodesource.com/setup_20.x | bash -
 
 # update the package sources
 RUN apt-get update -qq && apt-get upgrade -qq
