@@ -23,7 +23,7 @@ RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y \
     php8.1-xml php8.1-ldap php8.1-mbstring libapache2-mod-php8.1 php8.1-pgsql
 
 # use newer NodeJS version
-RUN curl -sL deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL deb.nodesource.com/setup_20.x | bash -
 
 # update the package sources
 RUN apt-get update -qq && apt-get upgrade -qq
