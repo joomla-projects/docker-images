@@ -1,23 +1,23 @@
 # Joomla! Cypress
-FROM cypress/included:latest
+FROM cypress/browsers:latest
 LABEL org.opencontainers.image.authors="Yves Hoppe <yves@compojoom.com>, Robert Deutz <rdeutz@googemail.com>, Harald Leithner <harald.leithner@community.joomla.org>"
 
 # Set correct environment variables.
 ENV HOME /root
 
 # Update the package sources
-RUN apt-get update
-RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y curl
+RUN apt update
+RUN DEBIAN_FRONTEND='noninteractive' apt install -y curl
 
 # Add sury php repository
 RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
 RUN echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ `. /etc/os-release ; echo $VERSION_CODENAME` main" > /etc/apt/sources.list.d/php.list
 
 # Update the package sources
-RUN apt-get update
+RUN apt update
 
 # We use the environment variable to stop debconf from asking questions..
-RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y apache2 \
+RUN DEBIAN_FRONTEND='noninteractive' apt install -y apache2 \
     php8.4 php8.4-cli php8.4-curl php8.4-gd php8.4-mysql php8.4-zip php8.4-xml php8.4-ldap php8.4-mbstring libapache2-mod-php8.4 php8.4-pgsql \
     curl wget unzip git netcat-openbsd rsync openssl
 
@@ -28,7 +28,7 @@ RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y apache2 \
 RUN DEBIAN_FRONTEND='noninteractive' apt autoremove -y libva-x11-2
 
 # Package install is finished, clean up
-RUN apt-get clean # && rm -rf /var/lib/apt/lists/*
+RUN apt clean # && rm -rf /var/lib/apt/lists/*
 
 # Create testing directory
 RUN mkdir -p /tests/www
@@ -52,7 +52,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=bin --file
 RUN composer self-update
 RUN git config --global http.postBuffer 524288000
 
-RUN apt-get upgrade -y
+RUN apt upgrade -y
 
 # Start Apache
 CMD apache2ctl -D FOREGROUND
