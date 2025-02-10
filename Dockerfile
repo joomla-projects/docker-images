@@ -18,7 +18,7 @@ RUN apt-get update
 
 # we use the enviroment variable to stop debconf from asking questions..
 RUN DEBIAN_FRONTEND='noninteractive' apt-get install -y apache2 \
-    php7.2  php7.2-cli php7.2-curl php7.2-gd php7.2-mysql php7.2-zip php7.2-xml php7.2-ldap php7.2-mbstring libapache2-mod-php7.2 php7.2-pgsql \
+    php7.2 php7.2-cli php7.2-curl php7.2-gd php7.2-mysql php7.2-zip php7.2-xml php7.2-ldap php7.2-mbstring libapache2-mod-php7.2 php7.2-pgsql \
     curl wget unzip git netcat rsync
 
 # Remove unneded library which leads to an error in cypress
@@ -33,8 +33,16 @@ RUN apt-get clean # && rm -rf /var/lib/apt/lists/*
 # Create testing directory
 RUN mkdir -p /tests/www
 
+# Create certificates
+RUN mkdir /tests/keys
+RUN sudo openssl req -new -newkey rsa:4096 -nodes -keyout /tests/keys/server.key -out /tests/keys/server.csr -subj "/CN=localhost"
+RUN sudo openssl x509 -req -days 365 -in /tests/keys/server.csr -signkey /tests/keys/server.key -out /tests/keys/server.crt
+
 # Apache site conf
 ADD config/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+# Enable Apache SSL module
+RUN a2enmod ssl
 
 # clean up tmp files (we don't need them for the image)
 RUN rm -rf /tmp/* /var/tmp/*
