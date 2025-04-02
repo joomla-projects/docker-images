@@ -22,6 +22,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 
 ENV COMPOSER_CACHE_DIR="/tmp/composer-cache"
 
+ADD cloudflare_clear_cache /bin
 ADD drone_prepare_package.sh /bin
 ADD add_github_status.sh /bin
 ADD notify /bin
@@ -30,6 +31,7 @@ ADD templates /build_templates
 
 RUN php -v
 
+RUN chmod +x /bin/cloudflare_clear_cache
 RUN chmod +x /bin/drone_prepare_package.sh
 RUN chmod +x /bin/add_github_status.sh
 RUN chmod +x /bin/notify
