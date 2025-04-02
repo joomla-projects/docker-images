@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ -z "$CLOUDFLARE_TOKEN" ] || [ -z "$CLOUDFLARE_ZONE_ID" ]; then
+    echo "Cloudflare token or zone ID not set."
+    exit 1
+fi
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <prefix1> [<prefix2> ...]"
+    exit 1
+fi
+
+api_url="https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_ZONE_ID/purge_cache"
+
+prefixes=()
+for prefix in "$@"; do
+    prefixes+=("\"$prefix\"")
+done
+
+json_data="{\"prefixes\": [$(IFS=,; echo "${prefixes[*]}")]}"
+
+response=$(curl -s -X POST "$api_url" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $CLOUDFLARE_TOKEN" \
+    --data "$json_data")
+
+echo "Response from Cloudflare: $response"
