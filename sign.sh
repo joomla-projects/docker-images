@@ -25,7 +25,7 @@ function localread() {
 
   if [ -z "${!L_VAR}" ];
   then
-    # Using workaround because OSX supports only bash 3.2 which doesn't support
+    # Using workaround because OSX supports only bash 3.2 which doesn't support switch statements
     if [ "${BASH_VERSINFO:-0}" -ge 4 ];
     then
       read "-${L_ADDITIONAL}rep" "${L_LABEL} " -i "${L_DEFAULT}" "${L_VAR}"
@@ -73,7 +73,7 @@ function checkReleaseFolder() {
       cp "$file" updates/staged/targets/
     done
   else
-    echo '=> Relase Folder has no ZIP files, is this correct?'
+    echo '=> Release Folder has no ZIP files, is this correct?'
     userConfirm
   fi
 }
@@ -124,11 +124,6 @@ then
   echo "Unable to detect git email address. Please set email address in git global configuration"
   exit 1
 fi
-
-# TODO - Delete
-# echo "=> Asking for needed User inputs"
-# localread "Branch to use for signage:" "" "GIT_TARGET_BRANCH_NAME"
-# if [ -z "${GIT_TARGET_BRANCH_NAME}" ]; then echo "Aborting no branch name given."; exit 1; fi
 
 localread "Github Personal Access Token:" "" ACCESS_TOKEN s
 if [ -z "${ACCESS_TOKEN}" ]; then echo "Aborting no Personal Access Token given."; exit 1; fi
@@ -211,7 +206,7 @@ case $TUF_PARAMS in
 esac
 # BASH 3.2 compatible code end
 
-# Prepare standard environment parameters for the docker iamge
+# Prepare standard environment parameters for the docker image
 DOCKER_ENV_FILE=$(mktemp)
 echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $DOCKER_ENV_FILE
 echo "GIT_BASE_BRANCH_NAME=${GIT_BASE_BRANCH_NAME}" >> $DOCKER_ENV_FILE
@@ -252,7 +247,7 @@ elif [[ $TUF_PARAMS = "prepare-release" ]]; then
     localread "Please enter the Update Description:" "${UPDATE_NAME} Release" UPDATE_DESCRIPTION
 
     # INFO Url must be asked
-    localread "Please enter the Update Info URL:" "https://www.joomla.org/announcements/release-news/" UPDATE_INFO_URL
+    localread "Please enter the Update Info URL:" "" UPDATE_INFO_URL
     localread "Please enter the Update Info Titel:" "${UPDATE_NAME} Release" UPDATE_INFO_TITLE
     sed -i -e "s/GIT_TARGET_BRANCH_NAME=.*/GIT_TARGET_BRANCH_NAME=release\/${GIT_BASE_BRANCH_NAME}\/${UPDATE_VERSION}/g" "$DOCKER_ENV_FILE"
     docker run --rm \
