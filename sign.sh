@@ -336,10 +336,6 @@ elif [[ $TUF_PARAMS = "update-timestamp" ]]; then
     -v "$(pwd)/updates:/go" ${DOCKER_IMAGE} "${TUF_PARAMS}"
   cleanupdocker
 elif [[ $TUF_PARAMS = "clean-docker" ]]; then
-  if [ ! -d "$SIGNER_DIR/updates/.git" ]; then
-    echo "Error $SIGNER_DIR/updates/.git doesn't exists."
-    exit 1
-  fi
   rm -rf "$SIGNER_DIR/updates"
   mkdir "$SIGNER_DIR/updates"
   docker run --rm \
