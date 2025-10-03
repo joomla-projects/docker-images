@@ -12,6 +12,9 @@ RUN apt-get install -y autoconf gcc git libbz2-dev libfreetype6-dev libmemcached
 	libpng-dev libsodium-dev libsqlite3-dev libssl-dev libxpm-dev libzip-dev \
 	mariadb-client patch postgresql-client unzip wget zstd
 
+# Install PIE
+COPY --from=ghcr.io/php/pie:bin /pie /usr/bin/pie
+
 RUN docker-php-ext-configure gd \
 	--with-freetype \
 	--with-jpeg \
@@ -33,15 +36,10 @@ RUN docker-php-ext-install pdo_sqlite
 RUN docker-php-ext-install pgsql
 RUN docker-php-ext-install zip
 
-
-#RUN pecl install memcached \
-#	&& docker-php-ext-enable memcached
-
-#RUN pecl install redis \
-#	&& docker-php-ext-enable redis
-
-RUN pecl install apcu \
-	&& docker-php-ext-enable apcu \
+# Use PIE to install extensions
+RUN pie install phpredis/phpredis:@dev
+RUN pie install php-memcached/php-memcached:@dev
+RUN pie install apcu/apcu:@dev \
 	&& echo "\napc.enable=1\napc.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 
 RUN sed -i 's/memory_limit\s*=.*/memory_limit=-1/g' /usr/local/etc/php/php.ini-production \
