@@ -25,7 +25,6 @@ RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
 RUN docker-php-ext-install bz2
 RUN docker-php-ext-install exif
 RUN docker-php-ext-install ftp
-RUN docker-php-ext-install gd
 RUN docker-php-ext-install ldap
 RUN docker-php-ext-install mbstring
 RUN docker-php-ext-install sodium
@@ -35,6 +34,9 @@ RUN docker-php-ext-install pdo_pgsql
 RUN docker-php-ext-install pdo_sqlite
 RUN docker-php-ext-install pgsql
 RUN docker-php-ext-install zip
+
+RUN docker-php-ext-configure gd --with-freetype --with-webp --with-jpeg \
+    && docker-php-ext-install gd
 
 # Use PIE to install extensions
 RUN pie install phpredis/phpredis:@dev
