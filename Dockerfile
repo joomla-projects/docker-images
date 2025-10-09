@@ -3,7 +3,7 @@ FROM cypress/browsers:latest
 LABEL org.opencontainers.image.authors="Yves Hoppe <yves@compojoom.com>, Robert Deutz <rdeutz@googemail.com>, Harald Leithner <harald.leithner@community.joomla.org>"
 
 # Set correct environment variables.
-ENV HOME /root
+ENV HOME=/root
 
 # Update the package sources
 RUN apt update
