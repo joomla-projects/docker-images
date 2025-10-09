@@ -55,4 +55,4 @@ RUN git config --global http.postBuffer 524288000
 RUN apt upgrade -y
 
 # Start Apache
-CMD apache2ctl -D FOREGROUND
+CMD ["apache2ctl", "-D", "FOREGROUND"]
