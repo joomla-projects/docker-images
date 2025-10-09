@@ -54,5 +54,8 @@ RUN git config --global http.postBuffer 524288000
 
 RUN apt upgrade -y
 
+# Expose Apache ports
+EXPOSE 80 443
+
 # Start Apache
 CMD ["apache2ctl", "-D", "FOREGROUND"]
