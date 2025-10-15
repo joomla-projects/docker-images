@@ -41,6 +41,10 @@ RUN openssl x509 -req -days 365 -in /tests/keys/server.csr -signkey /tests/keys/
 # Apache site conf
 ADD config/000-default.conf /etc/apache2/sites-available/000-default.conf
 
+# This is neede for blacklisting the joomla configuration file which gets added in the entrypoint script
+# This can be removed when we switch to php 8.5 as minimum requirement and entrypoint script is adjusted to use php.ini
+RUN touch /etc/php/8.5/apache2/conf.d/10-opcache.ini
+
 # Enable Apache SSL module
 RUN a2enmod ssl
 
