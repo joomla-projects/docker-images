@@ -1,4 +1,4 @@
-FROM php:8.5-rc-apache
+FROM php:8.5.0RC2-apache
 
 LABEL authors="Hannes Papenberg, Harald Leithner"
 
