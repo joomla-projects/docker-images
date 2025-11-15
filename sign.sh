@@ -85,7 +85,7 @@ function loadkeys() {
 
 function checkkey() {
     if [ ! -f "$SIGNER_DIR/updates/keys/$1.json" ]; then
-        echo "Key 'targets' not found."
+        echo "Key '$1' not found."
         cleanupdocker
         exit 1
     fi
