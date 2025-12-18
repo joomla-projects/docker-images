@@ -1,5 +1,5 @@
 # Joomla! Cypress
-FROM cypress/browsers:latest
+FROM cypress/browsers:node-24.12.0-chrome-143.0.7499.109-1-ff-146.0-edge-143.0.3650.80-1
 LABEL org.opencontainers.image.authors="Yves Hoppe <yves@compojoom.com>, Robert Deutz <rdeutz@googemail.com>, Harald Leithner <harald.leithner@community.joomla.org>"
 
 # Set correct environment variables.
