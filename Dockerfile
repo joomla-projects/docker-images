@@ -32,6 +32,7 @@ RUN apt clean # && rm -rf /var/lib/apt/lists/*
 
 # Create testing directory
 RUN mkdir -p /tests/www
+RUN chmod -R 777 /tests/www
 
 # Create certificates
 RUN mkdir /tests/keys
