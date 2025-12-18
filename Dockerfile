@@ -4,6 +4,7 @@ LABEL org.opencontainers.image.authors="Yves Hoppe <yves@compojoom.com>, Robert 
 
 # Set correct environment variables.
 ENV HOME=/root
+RUN chmod +rwx /root
 
 # Update the package sources
 RUN apt update
