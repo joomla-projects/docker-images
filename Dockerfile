@@ -23,7 +23,7 @@ RUN echo "=> Running apt-get update" && \
     echo "=> Cleanup apt" && \
     rm -rf /var/cache/apt /var/lib/apt/lists github-cli.deb && \
     echo '=> Create User for Docker' && \
-    groupadd $eGID && useradd --system -u $eUID -g $eGID -s /bin/bash -m --home-dir /go/ ihavenoname
+    groupadd --gid "${eGID}" ihavenogroup && useradd --system -u $eUID -g $eGID -s /bin/bash -m --home-dir /go/ ihavenoname
 
 RUN echo "=> Install go-tuf" && \
     mkdir /tuf && \
